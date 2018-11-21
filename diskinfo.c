@@ -13,15 +13,16 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#define MAX_INPUT 256
+
 /** Disk Parsing Functions **/
 
 char* get_os_name(char* memblock) {
-	char* name = "";
+	char name[MAX_INPUT];
 	int i;
 	for (i = 0; i < 8; i++) {
 		//strncpy(name[i], p[i+3], strlen(p[i+3])+1);
-		//name[i] = memblock[i+3];
-		strncat(name, (const char*)memblock[i+3], strlen((char*)memblock[i+3]+1));
+		name[i] = memblock[i+3];
 	}
 	return name;
 }
