@@ -37,6 +37,18 @@ void name_and_label(char* memblock, char* name, char* label) {
 	}
 }
 
+int get_total_size(char* memblock) {
+	//int bytes_per_sector = memblock[11] + (memblock[12] << 8);
+	int total_sectors = memblock[19] + (memblock[20] << 8);
+	int total size = bytes_per_sector * total_sectors;
+	printf("%d\n"total_size);
+	total size = total_sectors * SECTOR_SIZE;
+	printf("%d\n"total_size);
+
+	
+	return total_size;
+}
+
 int main(int argc, char* argv[]) {
 	if (argc < 2) {
 		printf("Error: disk image needed as argument.\n");
@@ -66,8 +78,6 @@ int main(int argc, char* argv[]) {
 	char* disk_label = malloc(sizeof(char));
 	name_and_label(memblock, os_name, disk_label);
 	
-/*
-	char* disk_label = get_disk_label(memblock);
 	int total_size = get_total_size(memblock);
 	int free_size = get_free_size(memblock, total_size);
 	
