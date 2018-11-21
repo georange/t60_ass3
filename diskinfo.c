@@ -17,14 +17,11 @@
 
 /** Disk Parsing Functions **/
 
-char[] get_os_name(char* memblock) {
-	char name[MAX_INPUT];
+void get_os_name(char* memblock, char* name) {
 	int i;
 	for (i = 0; i < 8; i++) {
-		//strncpy(name[i], p[i+3], strlen(p[i+3])+1);
 		name[i] = memblock[i+3];
 	}
-	return name;
 }
 
 int main(int argc, char* argv[]) {
@@ -52,7 +49,8 @@ int main(int argc, char* argv[]) {
 	}
 	
 	// parse disk data
-	char os_name[MAX_INPUT] = get_os_name(memblock);
+	char* os_name = malloc(sizeof(char));
+	os_name = get_os_name(memblock, os_name);
 /*
 	char* disk_label = get_disk_label(memblock);
 	int total_size = get_total_size(memblock);
