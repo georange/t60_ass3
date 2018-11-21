@@ -13,14 +13,27 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#define MAX_INPUT 256
+#define SECTOR_SIZE 512
 
 /** Disk Parsing Functions **/
 
-void get_os_name(char* memblock, char* name) {
+void name_and_label(char* memblock, char* name, char* label) {
 	int i;
 	for (i = 0; i < 8; i++) {
 		name[i] = memblock[i+3];
+		label[i] = memblock[i+43];
+	}
+	
+	if (label[0] == ' ') {
+		memblock += SECTOR_SIZE * 19;
+		while (memblock[0]) {
+			if (memblock[11] == 8) {
+				for (i = 0; i < 8; i++) {
+					label[i] = memblock[i];
+				}
+			}
+			memblock += 32;
+		}
 	}
 }
 
@@ -49,8 +62,10 @@ int main(int argc, char* argv[]) {
 	}
 	
 	// parse disk data
-	char* os_name = malloc(sizeof(char));
-	get_os_name(memblock, os_name);
+	char* os_name = malloc(sizeof(char));	
+	char* disk_label = malloc(sizeof(char));
+	name_and_label(memblock, os_name, disk_label);
+	
 /*
 	char* disk_label = get_disk_label(memblock);
 	int total_size = get_total_size(memblock);
@@ -63,8 +78,8 @@ int main(int argc, char* argv[]) {
 */	
 	// print results
 	printf("OS Name: %s\n", os_name);
-/*	printf("Label of the disk: %s\n", disk_label);
-	printf("Total size of the disk: %d bytes\n", total_size);
+	printf("Label of the disk: %s\n", disk_label);
+/*	printf("Total size of the disk: %d bytes\n", total_size);
 	printf("Free size of the disk: %d bytes\n\n", free_size);
 	
 	printf("==============\n");
