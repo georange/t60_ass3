@@ -16,7 +16,7 @@
 /** Disk Parsing Functions **/
 
 char* get_os_name(char* memblock) {
-	char* name;
+	char* name = "";
 	int i;
 	for (i = 0; i < 8; i++) {
 		//strncpy(name[i], p[i+3], strlen(p[i+3])+1);
