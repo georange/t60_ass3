@@ -17,7 +17,7 @@
 
 /** Disk Parsing Functions **/
 
-char* get_os_name(char* memblock) {
+char[] get_os_name(char* memblock) {
 	char name[MAX_INPUT];
 	int i;
 	for (i = 0; i < 8; i++) {
