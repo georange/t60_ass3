@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
 	
 //	int num_fat_copies = get_num_fat_copies(memblock);
 //	int sectors_per_fat = get_sectors_per_fat(memblock);
-*/	
+	
 	// print results
 	printf("OS Name: %s\n", os_name);
 	printf("Label of the disk: %s\n", disk_label);
