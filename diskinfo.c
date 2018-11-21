@@ -42,7 +42,7 @@ int get_total_size(char* memblock) {
 	int total_sectors = memblock[19] + (memblock[20] << 8);
 	int total_size = bytes_per_sector * total_sectors;
 	printf("%d\n"total_size);
-	total size = total_sectors * SECTOR_SIZE;
+	total_size = total_sectors * SECTOR_SIZE;
 	printf("%d\n"total_size);
 
 	return total_size;
