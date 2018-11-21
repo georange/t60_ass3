@@ -38,14 +38,28 @@ void name_and_label(char* memblock, char* name, char* label) {
 }
 
 int get_total_size(char* memblock) {
-	int bytes_per_sector = memblock[11] + (memblock[12] << 8);
 	int total_sectors = memblock[19] + (memblock[20] << 8);
-	int total_size = bytes_per_sector * total_sectors;
-	printf("%d\n", total_size);
-	total_size = total_sectors * SECTOR_SIZE;
-	printf("%d\n", total_size);
+	printf("%d",memblock[19]);
+	printf("%d",memblock[20] << 8);
+	int total_size = total_sectors * SECTOR_SIZE;
 
 	return total_size;
+}
+
+int get_free_size(char* memblock, int size) {
+	int free_spaces = 0;
+
+	// traverse the FAT table
+	int i;
+	for (i = SECTOR_SIZE; i < (size /SECTOR_SIZE); i++) {
+		int entry = 0;
+		
+		if (!entry) {
+			free_spaces++;
+		}
+	}
+
+	return SECTOR_SIZE * freeSectors;
 }
 
 int main(int argc, char* argv[]) {
@@ -78,7 +92,7 @@ int main(int argc, char* argv[]) {
 	name_and_label(memblock, os_name, disk_label);
 	
 	int total_size = get_total_size(memblock);
-//	int free_size = get_free_size(memblock, total_size);
+	int free_size = get_free_size(memblock, total_size);
 	
 //	int num_files = get_num_files(memblock);
 	
@@ -88,16 +102,16 @@ int main(int argc, char* argv[]) {
 	// print results
 	printf("OS Name: %s\n", os_name);
 	printf("Label of the disk: %s\n", disk_label);
-/*	printf("Total size of the disk: %d bytes\n", total_size);
+	printf("Total size of the disk: %d bytes\n", total_size);
 	printf("Free size of the disk: %d bytes\n\n", free_size);
 	
 	printf("==============\n");
-	printf("The number of files in the root directory (including all files in the root directory and files in all subdirectories): %d\n\n", num_files);
+//	printf("The number of files in the root directory (including all files in the root directory and files in all subdirectories): %d\n\n", num_files);
 	
 	printf("=============\n");
-	printf("Number of FAT copies: %d\n", num_fat_copies);
-	printf("Sectors per FAT: %d\n\n", sectors_per_fat);
-*/	
+//	printf("Number of FAT copies: %d\n", num_fat_copies);
+//	printf("Sectors per FAT: %d\n\n", sectors_per_fat);
+	
 	// clean up
 	munmap(memblock, buff.st_size);
 	close(fd);
