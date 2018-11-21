@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
 	}
 	
 	// parse disk data
-	char* os_name = get_os_name(memblock);
+	char[] os_name = get_os_name(memblock);
 /*
 	char* disk_label = get_disk_label(memblock);
 	int total_size = get_total_size(memblock);
