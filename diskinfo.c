@@ -51,6 +51,7 @@ int main(int argc, char* argv[]) {
 	
 	// parse disk data
 	char* os_name = get_os_name(memblock);
+/*
 	char* disk_label = get_disk_label(memblock);
 	int total_size = get_total_size(memblock);
 	int free_size = get_free_size(memblock, total_size);
@@ -59,10 +60,10 @@ int main(int argc, char* argv[]) {
 	
 	int num_fat_copies = get_num_fat_copies(memblock);
 	int sectors_per_fat = get_sectors_per_fat(memblock);
-	
+*/	
 	// print results
 	printf("OS Name: %s\n", os_name);
-	printf("Label of the disk: %s\n", disk_label);
+/*	printf("Label of the disk: %s\n", disk_label);
 	printf("Total size of the disk: %d bytes\n", total_size);
 	printf("Free size of the disk: %d bytes\n\n", free_size);
 	
@@ -72,7 +73,7 @@ int main(int argc, char* argv[]) {
 	printf("=============\n");
 	printf("Number of FAT copies: %d\n", num_fat_copies);
 	printf("Sectors per FAT: %d\n\n", sectors_per_fat);
-	
+*/	
 	// clean up
 	munmap(memblock, buff.st_size);
 	close(fd);
