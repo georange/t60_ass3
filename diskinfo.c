@@ -21,7 +21,7 @@ char* get_os_name(char* memblock) {
 	for (i = 0; i < 8; i++) {
 		//strncpy(name[i], p[i+3], strlen(p[i+3])+1);
 		//name[i] = memblock[i+3];
-		strncat(name, memblock[i+3], strlen(memblock[i+3]+1));
+		strncat(name, (const char*)memblock[i+3], strlen((char*)memblock[i+3]+1));
 	}
 	return name;
 }
