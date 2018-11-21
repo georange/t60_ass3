@@ -15,7 +15,7 @@
 
 /** Disk Parsing Functions **/
 
-char* get_os_name(const char* memblock) {
+char* get_os_name(char* memblock) {
 	char* name;
 	int i;
 	for (i = 0; i < 8; i++) {
@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
 	}
 	
 	// open disk image and map memory
-	const char *memblock;
+	char *memblock;
 	int fd;
 	struct stat buff;
 	
