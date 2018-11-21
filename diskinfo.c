@@ -59,7 +59,7 @@ int get_free_size(char* memblock, int size) {
 		}
 	}
 
-	return SECTOR_SIZE * freeSectors;
+	return SECTOR_SIZE * free_spaces;
 }
 
 int main(int argc, char* argv[]) {
