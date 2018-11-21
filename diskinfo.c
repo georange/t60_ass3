@@ -79,12 +79,12 @@ int main(int argc, char* argv[]) {
 	name_and_label(memblock, os_name, disk_label);
 	
 	int total_size = get_total_size(memblock);
-	int free_size = get_free_size(memblock, total_size);
+//	int free_size = get_free_size(memblock, total_size);
 	
-	int num_files = get_num_files(memblock);
+//	int num_files = get_num_files(memblock);
 	
-	int num_fat_copies = get_num_fat_copies(memblock);
-	int sectors_per_fat = get_sectors_per_fat(memblock);
+//	int num_fat_copies = get_num_fat_copies(memblock);
+//	int sectors_per_fat = get_sectors_per_fat(memblock);
 */	
 	// print results
 	printf("OS Name: %s\n", os_name);
