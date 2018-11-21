@@ -39,8 +39,8 @@ void name_and_label(char* memblock, char* name, char* label) {
 
 int get_total_size(char* memblock) {
 	int total_sectors = memblock[19] + (memblock[20] << 8);
-	printf("%d",memblock[19]);
-	printf("%d",memblock[20] << 8);
+	printf("%d\n",memblock[19]);
+	printf("%d\n",memblock[20] << 8);
 	int total_size = total_sectors * SECTOR_SIZE;
 
 	return total_size;
