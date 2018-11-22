@@ -24,15 +24,15 @@ void name_and_label(char* memblock, char* name, char* label) {
 		label[i] = memblock[i+43];
 	}
 	
-	if (label[0] == ' ') {
-		memblock += SECTOR_SIZE * 19;
+	if (label[0] == " ") {
+		memblock = memblock + (SECTOR_SIZE * 19);
 		while (memblock[0]) {
 			if (memblock[11] == 8) {
 				for (i = 0; i < 8; i++) {
 					label[i] = memblock[i];
 				}
 			}
-			memblock += 32;
+			memblock = memblock + 32;
 		}
 	}
 }
