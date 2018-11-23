@@ -122,9 +122,9 @@ int get_num_files(char* memblock, int d, int sub) {
 	// if subdirectory continues, find next sector and go there
 	if (sub) {
 		int next_cluster = (int)memblock[offset+26] + ((int)memblock[offset+27] << 8);
-		int location = get_fat(memblock, next_cluster);
-		if (location >= 0xFF8 && location <= 0xFFF) {
-			count = count + get_num_files(memblock, location, 1);
+		int fat = get_fat(memblock, next_cluster);
+		if ((fat != 0x00) && ((fat < 0xFF0) || (fat > 0xFFF))) {
+			count = count + get_num_files(memblock, fat, 1);
 		}
 	}
 	
