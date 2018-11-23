@@ -76,14 +76,18 @@ int get_free_size(char* memblock, int size) {
 	return free_space;
 }
 
-int get_num_files(char* memblock) {
-	memblock += (SECTOR_SIZE * 19);
+int get_num_files(char* memblock, int offset) {
+	memblock += offset;
 	int count = 0;
+	int subdirectories[MAX_INPUT];
 	
 	// look for non-free directory entries
 	while ((memblock[0] != 0x00) && (memblock[0] != 0xE5)) {
-		// check for 0x0f, subdirectories, and volume label
-		if ((memblock[11] =! 0x0F) && !(memblock[11] & 0x10) && !(memblock[11] & 0x08)) {
+		// if subdirectory, go deeper
+		if (memblock[11] & 0x10){
+		
+		// otherwise, check for 0x0f, and volume label
+		}else if ((memblock[11] =! 0x0F) && !(memblock[11] & 0x08)) {
 			count++;
 		} 
 		memblock += 32;
@@ -124,7 +128,7 @@ int main(int argc, char* argv[]) {
 	int total_size = get_total_size(memblock);
 	int free_size = get_free_size(memblock, total_size);
 	
-	int num_files = get_num_files(memblock);
+	int num_files = get_num_files(memblock, SECTOR_SIZE * 19);
 	
 	int num_fat_copies = memblock[16];
 	int sectors_per_fat = memblock[22] + (memblock[23] << 8);
