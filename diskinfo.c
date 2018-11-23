@@ -71,7 +71,7 @@ int get_free_size(char* memblock, int size) {
 	// traverse the FAT table
 	int i;
 	for (i = 2; i < (size/SECTOR_SIZE); i++) {
-		int entry = get_fat(memblock, i)
+		int entry = get_fat(memblock, i);
 		
 		// if entry is 0x000, it is free
 		if (!entry) {
