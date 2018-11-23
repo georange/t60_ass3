@@ -100,7 +100,7 @@ int get_num_files(char* memblock, int d, int sub) {
 			continue;
 		}
 		char temp = memblock[offset+11];
-		printf("file: %s -- attr: %04x\n", memblock+offset, tmp);
+		printf("file: %s -- attr: %04x\n", memblock+offset, temp);
 		// if a subdirectory is found, go deeper
 		if ((temp & 0x10) && (temp != 0x0F) && !(temp & 0x08)){
 			// find first logical cluster and go there
