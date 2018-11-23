@@ -100,7 +100,7 @@ int get_num_files(char* memblock, int d, int sub) {
 			continue;
 		}
 		char temp = memblock[offset+11];
-		
+		printf("file: %s -- attr: %04x\n", memblock+offset, tmp);
 		// if a subdirectory is found, go deeper
 		if ((temp & 0x10) && (temp != 0x0F) && !(temp & 0x08)){
 			// find first logical cluster and go there
@@ -120,14 +120,14 @@ int get_num_files(char* memblock, int d, int sub) {
 	}
 	
 	// if subdirectory continues, find next sector and go there
-	if (sub) {
+/*	if (sub) {
 		int next_cluster = memblock[offset+26] + (memblock[offset+27] << 8);
 		int location = get_fat(memblock, next_cluster);
 		if (location >= 0xFF8 && location <= 0xFFF) {
 			count = count + get_num_files(memblock, location, 1);
 		}
 	}
-
+*/
 	return count;
 }
 
