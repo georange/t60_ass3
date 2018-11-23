@@ -98,9 +98,11 @@ int get_num_files(char* memblock, int d, int sub) {
 		if ((memblock[offset+0] == 0x00) && (memblock[offset+0] == 0xE5)) {
 			continue;
 		}
+		char temp = memblock[offset+11];
+		
 		// if a subdirectory is found, go deeper
-		if ((memblock[offset+11] & 0x10) && (memblock[offset+11] =! 0x0F) && !(memblock[offset+11] & 0x08)){
-			// find FAT entry and go there
+		if ((temp & 0x10) && (temp =! 0x0F) && !(temp & 0x08)){
+			// find first logical cluster and go there
 			int next_cluster = memblock[26] + (memblock[27] << 8);
 			count = count + get_num_files(memblock, next_cluster, 1);
 			
@@ -111,7 +113,7 @@ int get_num_files(char* memblock, int d, int sub) {
 			}
 		
 		// otherwise, check for 0x0f, and volume label
-		}else if ((memblock[offset+11] =! 0x0F) && (memblock[offset+11] & 0x10) == 0 && (memblock[offset+11] & 0x08) == 0) {
+		}else if ((temp =! 0x0F) && (temp & 0x10) == 0 && (temp & 0x08) == 0) {
 			count++;
 		} 
 	}
