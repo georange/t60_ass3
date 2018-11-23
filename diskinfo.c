@@ -92,7 +92,7 @@ int get_num_files(char* memblock, int d, int sub) {
 	if (sub) {
 		lim = SECTOR_SIZE;
 	}
-	int offset, logic_cluster;
+	int offset, logical_cluster;
 
 L_START:	
 	for (i = 0; i < lim; i = i+32) {
@@ -112,7 +112,7 @@ L_START:
 			}
 			
 			// find first logical cluster and go there
-			logic_cluster = (int)memblock[offset+26] + ((int)memblock[offset+27] << 8);
+			logical_cluster = (int)memblock[offset+26] + ((int)memblock[offset+27] << 8);
 			count = count + get_num_files(memblock, (31+logical_cluster)*SECTOR_SIZE, 1);
 			
 			// check if fat entry leads to another sector
