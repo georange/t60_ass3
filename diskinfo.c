@@ -109,10 +109,10 @@ int get_num_files(char* memblock, int d, int sub) {
 			count = count + get_num_files(memblock, next_cluster, 1);
 			
 			// check if fat entry leads to another sector
-/*			int fat = get_fat(memblock, next_cluster);
-			if ((fat != 0x00) && ((fat < 0xFF0) || (fat > 0xFFF))) {
+			int fat = get_fat(memblock, next_cluster);
+			if ((fat != 0x00) && (fat < 0xFF0) && (fat > 0xFFF)) {
 				count = count + get_num_files(memblock, 31+fat, 1); 
-			} */
+			} 
 		
 		// otherwise, check for 0x0f, and volume label
 		}else if ((temp != 0x0F) && (temp & 0x10) == 0 && (temp & 0x08) == 0) {
