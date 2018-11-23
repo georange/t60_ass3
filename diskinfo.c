@@ -100,7 +100,7 @@ L_START:
 		// skip free directory entries
 		if (memblock[offset+0] == 0x00){
 			break;
-		} (memblock[offset+0] == 0xE5) {
+		} else if (memblock[offset+0] == 0xE5) {
 			continue;
 		}
 		char temp = memblock[offset+11];
