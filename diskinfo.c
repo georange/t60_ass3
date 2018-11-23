@@ -102,7 +102,7 @@ int get_num_files(char* memblock, int d, int sub) {
 		char temp = memblock[offset+11];
 		
 		// if a subdirectory is found, go deeper
-		if ((temp & 0x10) && (temp =! 0x0F) && !(temp & 0x08)){
+		if ((temp & 0x10) && (temp != 0x0F) && !(temp & 0x08)){
 			// find first logical cluster and go there
 			int next_cluster = memblock[offset+26] + (memblock[offset+27] << 8);
 			count = count + get_num_files(memblock, next_cluster, 1);
@@ -114,7 +114,7 @@ int get_num_files(char* memblock, int d, int sub) {
 			}
 		
 		// otherwise, check for 0x0f, and volume label
-		}else if ((temp =! 0x0F) && (temp & 0x10) == 0 && (temp & 0x08) == 0) {
+		}else if ((temp != 0x0F) && (temp & 0x10) == 0 && (temp & 0x08) == 0) {
 			count++;
 		} 
 	}
