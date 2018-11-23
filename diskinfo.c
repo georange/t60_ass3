@@ -14,6 +14,8 @@
 #include <unistd.h>
 
 #define SECTOR_SIZE 512
+#define MAX_INPUT 256
+
 
 /** Disk Parsing Functions **/
 
@@ -56,12 +58,12 @@ int get_free_size(char* memblock, int size) {
 		
 		// compute entry content
 		if ((i % 2) == 0) {
-			byte1 = memblock[SECTOR_SIZE + (int)((3*i)/2)+1] & 0x0F;
-			byte2 = memblock[SECTOR_SIZE + (int)((3*i)/2)] & 0xFF;
+			byte1 = memblock[SECTOR_SIZE + (int)((3*i)/2)+1] & 0b00001111;
+			byte2 = memblock[SECTOR_SIZE + (int)((3*i)/2)] & 0b11111111;
 			entry = (byte1 << 8) + byte2;
 		} else {
-			byte1 = memblock[SECTOR_SIZE + (int)((3*i)/2)] & 0xF0;
-			byte2 = memblock[SECTOR_SIZE + (int)((3*i)/2)+1] & 0xFF;
+			byte1 = memblock[SECTOR_SIZE + (int)((3*i)/2)] & 0b00001111;
+			byte2 = memblock[SECTOR_SIZE + (int)((3*i)/2)+1] & 0b11111111;
 			entry = (byte1 >> 4) + (byte2 << 4);
 		}
 		
@@ -72,6 +74,23 @@ int get_free_size(char* memblock, int size) {
 	}
 	int free_space = free_spaces * SECTOR_SIZE;
 	return free_space;
+}
+
+int get_num_files(char* memblock) {
+	memblock = memblock + (SECTOR_SIZE * 19);
+	int count = 0;
+	int subdirectories[MAX_INPUT];
+	
+	// look for non-free directory entries
+	while (memblock[0] != 0x00 && memblock[0] != 0xE5) {
+		// check for 0x0f, subdirectories, and volume label
+		if (memblock[11] =! 0x0F && !(memblock[11] & 0x10) && !(memblock[11] & 0x08)) {
+			count++;
+		} 
+		memblock += 32;
+	}
+
+	return count;
 }
 
 int main(int argc, char* argv[]) {
@@ -106,7 +125,7 @@ int main(int argc, char* argv[]) {
 	int total_size = get_total_size(memblock);
 	int free_size = get_free_size(memblock, total_size);
 	
-//	int num_files = get_num_files(memblock);
+	int num_files = get_num_files(memblock);
 	
 	int num_fat_copies = memblock[16];
 	int sectors_per_fat = memblock[22] + (memblock[23] << 8);
@@ -118,7 +137,7 @@ int main(int argc, char* argv[]) {
 	printf("Free size of the disk: %d bytes\n\n", free_size);
 	
 	printf("==============\n");
-//	printf("The number of files in the root directory (including all files in the root directory and files in all subdirectories): %d\n\n", num_files);
+	printf("The number of files in the root directory (including all files in the root directory and files in all subdirectories): %d\n\n", num_files);
 	
 	printf("=============\n");
 	printf("Number of FAT copies: %d\n", num_fat_copies);
