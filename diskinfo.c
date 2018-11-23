@@ -136,7 +136,7 @@ int main(int argc, char* argv[]) {
 	printf("Free size of the disk: %d bytes\n\n", free_size);
 	
 	printf("==============\n");
-	printf("The number of files in the root directory (including all files in the root directory and files in all subdirectories): %d\n\n", num_files);
+	//printf("The number of files in the root directory (including all files in the root directory and files in all subdirectories): %d\n\n", num_files);
 	
 	printf("=============\n");
 	printf("Number of FAT copies: %d\n", num_fat_copies);
