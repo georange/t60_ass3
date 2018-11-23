@@ -92,11 +92,12 @@ int get_num_files(char* memblock, int d, int sub) {
 	if (sub) {
 		lim = SECTOR_SIZE;
 	}
+	int offset;
 	
 	for (i = 0; i < lim; i = i+32) {
-		int offset = i+d;
+		offset = i+d;
 		// skip free directory entries
-		if ((memblock[offset+0] == 0x00) && (memblock[offset+0] == 0xE5)) {
+		if ((memblock[offset+0] == 0x00) || (memblock[offset+0] == 0xE5)) {
 			continue;
 		}
 		char temp = memblock[offset+11];
