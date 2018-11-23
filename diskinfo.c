@@ -106,7 +106,7 @@ int get_num_files(char* memblock, int d, int sub) {
 			
 			// check if fat entry leads to another sector
 			int fat = get_fat(memblock, next_cluster);
-			if ((fat != 0x00) && (fat < FF0) && (fat > FFF)) {
+			if ((fat != 0x00) && (fat < 0xFF0) && (fat > 0xFFF)) {
 				count = count + get_num_files(memblock, 31+fat, 1);
 			}
 		
