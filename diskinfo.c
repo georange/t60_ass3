@@ -81,7 +81,7 @@ int get_num_files(char* memblock) {
 	int count = 0;
 	
 	// look for non-free directory entries
-	while (memblock[0] != 0x00 && memblock[0] != 0xE5) {
+	while ((memblock[0] != 0x00) && (memblock[0] != 0xE5)) {
 		// check for 0x0f, subdirectories, and volume label
 		if ((memblock[11] =! 0x0F) && !(memblock[11] & 0x10) && !(memblock[11] & 0x08)) {
 			count++;
@@ -124,7 +124,7 @@ int main(int argc, char* argv[]) {
 	int total_size = get_total_size(memblock);
 	int free_size = get_free_size(memblock, total_size);
 	
-	//int num_files = get_num_files(memblock);
+	int num_files = get_num_files(memblock);
 	
 	int num_fat_copies = memblock[16];
 	int sectors_per_fat = memblock[22] + (memblock[23] << 8);
@@ -136,7 +136,7 @@ int main(int argc, char* argv[]) {
 	printf("Free size of the disk: %d bytes\n\n", free_size);
 	
 	printf("==============\n");
-	//printf("The number of files in the root directory (including all files in the root directory and files in all subdirectories): %d\n\n", num_files);
+	printf("The number of files in the root directory (including all files in the root directory and files in all subdirectories): %d\n\n", num_files);
 	
 	printf("=============\n");
 	printf("Number of FAT copies: %d\n", num_fat_copies);
