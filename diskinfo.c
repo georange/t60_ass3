@@ -2,7 +2,7 @@
    Georgia Ma
    V00849447
    CSC 360
-   Assignment 3
+   Assignment 3 part 1
 **/
 
 #include <stdio.h>
@@ -153,6 +153,7 @@ int main(int argc, char* argv[]) {
 	memblock = mmap(NULL, buff.st_size, PROT_READ, MAP_SHARED, fd, 0);
 	if (memblock == MAP_FAILED) {
 		printf("Error: could not map memory.\n");
+		close(fd);
 		exit(1);
 	}
 	

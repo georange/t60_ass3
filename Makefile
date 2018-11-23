@@ -1,15 +1,18 @@
 .phony all:
-all : diskinfo 
-#prog02 prog03
+all : diskinfo disklist diskget diskput
 
 diskinfo : diskinfo.c
 	gcc -Wall diskinfo.c -o diskinfo
 
-#prog02 : m.c n.c
-#    gcc -o prog02 m.c n.c
+disklist : disklist.c
+    gcc -Wall disklist.c -o disklist
 
-#prog03 : u.c v.c w.c
-#    gcc -o prog03 u.c v.c w.c
+diskget : diskget.c
+    gcc -Wall diskget.c -o diskget
+	
+diskput : diskput.c
+    gcc -Wall diskput.c -o diskput
+
 .PHONY clean:
 clean:
 	-rm -rf *.o *.exe
