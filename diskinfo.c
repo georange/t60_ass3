@@ -104,7 +104,7 @@ int get_num_files(char* memblock, int d, int sub) {
 		// if a subdirectory is found, go deeper
 		if ((temp & 0x10) && (temp != 0x0F) && !(temp & 0x08)){
 			// find first logical cluster and go there
-			int next_cluster = memblock[offset+26] + (memblock[offset+27] << 8);
+			int next_cluster = (int)memblock[offset+26] + ((int)memblock[offset+27] << 8);
 			count = count + get_num_files(memblock, next_cluster, 1);
 			
 			// check if fat entry leads to another sector
@@ -120,14 +120,14 @@ int get_num_files(char* memblock, int d, int sub) {
 	}
 	
 	// if subdirectory continues, find next sector and go there
-/*	if (sub) {
-		int next_cluster = memblock[offset+26] + (memblock[offset+27] << 8);
+	if (sub) {
+		int next_cluster = (int)memblock[offset+26] + ((int)memblock[offset+27] << 8);
 		int location = get_fat(memblock, next_cluster);
 		if (location >= 0xFF8 && location <= 0xFFF) {
 			count = count + get_num_files(memblock, location, 1);
 		}
 	}
-*/
+	
 	return count;
 }
 
