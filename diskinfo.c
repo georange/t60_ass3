@@ -103,7 +103,7 @@ int get_num_files(char* memblock, int d, int sub) {
 		// if a subdirectory is found, go deeper
 		if ((temp & 0x10) && (temp =! 0x0F) && !(temp & 0x08)){
 			// find first logical cluster and go there
-			int next_cluster = memblock[26] + (memblock[27] << 8);
+			int next_cluster = memblock[offset+26] + (memblock[offset+27] << 8);
 			count = count + get_num_files(memblock, next_cluster, 1);
 			
 			// check if fat entry leads to another sector
