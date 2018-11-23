@@ -16,6 +16,25 @@
 #define SECTOR_SIZE 512
 #define MAX_INPUT 256
 
+/** Helper Methods **/
+
+int get_fat(char* memblock, int i) {
+	int entry = 0;
+	int byte1 = 0;
+	int byte2 = 0;
+		
+	// compute entry content
+	if ((i % 2) == 0) {
+		byte1 = memblock[SECTOR_SIZE + (int)((3*i)/2)+1] & 0b00001111;
+		byte2 = memblock[SECTOR_SIZE + (int)((3*i)/2)] & 0b11111111;
+		entry = (byte1 << 8) + byte2;
+	} else {
+		byte1 = memblock[SECTOR_SIZE + (int)((3*i)/2)] & 0b00001111;
+		byte2 = memblock[SECTOR_SIZE + (int)((3*i)/2)+1] & 0b11111111;
+		entry = (byte1 >> 4) + (byte2 << 4);
+	}
+	return entry;
+}
 
 /** Disk Parsing Functions **/
 
@@ -51,21 +70,8 @@ int get_free_size(char* memblock, int size) {
 
 	// traverse the FAT table
 	int i;
-	for (i = 2; i < (size /SECTOR_SIZE); i++) {
-		int entry = 0;
-		int byte1 = 0;
-		int byte2 = 0;
-		
-		// compute entry content
-		if ((i % 2) == 0) {
-			byte1 = memblock[SECTOR_SIZE + (int)((3*i)/2)+1] & 0b00001111;
-			byte2 = memblock[SECTOR_SIZE + (int)((3*i)/2)] & 0b11111111;
-			entry = (byte1 << 8) + byte2;
-		} else {
-			byte1 = memblock[SECTOR_SIZE + (int)((3*i)/2)] & 0b00001111;
-			byte2 = memblock[SECTOR_SIZE + (int)((3*i)/2)+1] & 0b11111111;
-			entry = (byte1 >> 4) + (byte2 << 4);
-		}
+	for (i = 2; i < (size/SECTOR_SIZE); i++) {
+		int entry = get_fat(memblock, i)
 		
 		// if entry is 0x000, it is free
 		if (!entry) {
@@ -76,21 +82,42 @@ int get_free_size(char* memblock, int size) {
 	return free_space;
 }
 
-int get_num_files(char* memblock, int offset) {
-	memblock += offset;
+int get_num_files(char* memblock, int d, int sub) {
+	//memblock += d;
 	int count = 0;
-	int subdirectories[MAX_INPUT];
 	
 	// look for non-free directory entries
-	while ((memblock[0] != 0x00) && (memblock[0] != 0xE5)) {
-		// if subdirectory, go deeper
-		if (memblock[11] & 0x10){
+	int i;
+	int lim = SECTOR_SIZE*13;
+	if (sub) {
+		lim = SECTOR_SIZE;
+	}
+	for (i = 0; i < lim; i = i+32) {
+		int offset = i+d;
+		// skip free directory entries
+		if ((memblock[offset+0] == 0x00) && (memblock[offset+0] == 0xE5)) {
+			continue;
+		}
+		// if a subdirectory is found, go deeper
+		if ((memblock[offset+11] & 0x10) && (memblock[offset+11] =! 0x0F) && !(memblock[offset+11] & 0x08)){
+			// find FAT entry and go there
+			int next_cluster = p[26] + (p[27] << 8);
+			int location = get_fat(memblock, next_cluster);
+			count = count + get_num_files(memblock, location);
 		
 		// otherwise, check for 0x0f, and volume label
-		}else if ((memblock[11] =! 0x0F) && !(memblock[11] & 0x08)) {
+		}else if ((memblock[offset+11] =! 0x0F) && (memblock[offset+11] & 0x10) && !(memblock[offset+11] & 0x08)) {
 			count++;
 		} 
-		memblock += 32;
+	}
+	
+	// if subdirectory continues, fine next sector and go there
+	if (sub) {
+		int next_cluster = p[26] + (p[27] << 8);
+		int location = get_fat(memblock, next_cluster);
+		if (location >= 0xFF8 && location <= 0xFFF) {
+			count = count + get_num_files(memblock, location);
+		}
 	}
 
 	return count;
@@ -128,7 +155,7 @@ int main(int argc, char* argv[]) {
 	int total_size = get_total_size(memblock);
 	int free_size = get_free_size(memblock, total_size);
 	
-	int num_files = get_num_files(memblock, SECTOR_SIZE * 19);
+	int num_files = get_num_files(memblock, SECTOR_SIZE*19, 0);
 	
 	int num_fat_copies = memblock[16];
 	int sectors_per_fat = memblock[22] + (memblock[23] << 8);
