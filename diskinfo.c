@@ -77,7 +77,7 @@ int get_free_size(char* memblock, int size) {
 }
 
 int get_num_files(char* memblock) {
-	memblock = memblock + (SECTOR_SIZE * 19);
+	memblock += (SECTOR_SIZE * 19);
 	int count = 0;
 	
 	// look for non-free directory entries
