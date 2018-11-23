@@ -5,13 +5,13 @@ diskinfo : diskinfo.c
 	gcc -Wall diskinfo.c -o diskinfo
 
 disklist : disklist.c
-    gcc -Wall disklist.c -o disklist
+	gcc -Wall disklist.c -o disklist
 
 diskget : diskget.c
-    gcc -Wall diskget.c -o diskget
+	gcc -Wall diskget.c -o diskget
 	
 diskput : diskput.c
-    gcc -Wall diskput.c -o diskput
+	gcc -Wall diskput.c -o diskput
 
 .PHONY clean:
 clean:
