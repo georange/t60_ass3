@@ -92,28 +92,37 @@ int get_num_files(char* memblock, int d, int sub) {
 	if (sub) {
 		lim = SECTOR_SIZE;
 	}
-	int offset;
-	
+	int offset, logic_cluster;
+
+L_START:	
 	for (i = 0; i < lim; i = i+32) {
 		offset = i+d;
 		// skip free directory entries
-		if ((memblock[offset+0] == 0x00) || (memblock[offset+0] == 0xE5)) {
+		if (memblock[offset+0] == 0x00){
+			break;
+		} (memblock[offset+0] == 0xE5) {
 			continue;
 		}
 		char temp = memblock[offset+11];
 		printf("file: %s -- attr: %04x\n", memblock+offset, temp);
 		// if a subdirectory is found, go deeper
 		if ((temp & 0x10) && (temp != 0x0F) && !(temp & 0x08)){
+			if (memblock[offset] == '.') {
+				continue;
+			}
+			
 			// find first logical cluster and go there
-			int next_cluster = (int)memblock[offset+26] + ((int)memblock[offset+27] << 8);
-			count = count + get_num_files(memblock, next_cluster, 1);
+			logic_cluster = (int)memblock[offset+26] + ((int)memblock[offset+27] << 8);
+			count = count + get_num_files(memblock, (31+logical_cluster)*SECTOR_SIZE, 1);
 			
 			// check if fat entry leads to another sector
-/*			int fat = get_fat(memblock, next_cluster);
+			int fat = get_fat(memblock, logical_cluster);
 			if ((fat != 0x00) && ((fat < 0xFF0) || (fat > 0xFFF))) {
-				count = count + get_num_files(memblock, 31+fat, 1); 
+				d = (31+fat)*SECTOR_SIZE;
+				goto L_START;
+				//count = count + get_num_files(memblock, 31+fat, 1); 
 			} 
-*/		
+		
 		// otherwise, check for 0x0f, and volume label
 		}else if ((temp != 0x0F) && (temp & 0x10) == 0 && (temp & 0x08) == 0) {
 			count++;
@@ -121,14 +130,14 @@ int get_num_files(char* memblock, int d, int sub) {
 	}
 	
 	// if subdirectory continues, find next sector and go there
-	if (sub) {
+/*	if (sub) {
 		int next_cluster = (int)memblock[offset-i+26] + ((int)memblock[offset-i+27] << 8);
 		int fat = get_fat(memblock, next_cluster);
 		if ((fat != 0x00) && ((fat < 0xFF0) || (fat > 0xFFF))) {
 			count = count + get_num_files(memblock, fat, 1);
 		}
 	}
-	
+*/	
 	return count;
 }
 
