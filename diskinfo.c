@@ -83,7 +83,7 @@ int get_num_files(char* memblock) {
 	// look for non-free directory entries
 	while (memblock[0] != 0x00 && memblock[0] != 0xE5) {
 		// check for 0x0f, subdirectories, and volume label
-		if (memblock[11] =! 0x0F && !(memblock[11] & 0x10) && !(memblock[11] & 0x08)) {
+		if ((memblock[11] =! 0x0F) && !(memblock[11] & 0x10) && !(memblock[11] & 0x08)) {
 			count++;
 		} 
 		memblock += 32;
