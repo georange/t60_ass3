@@ -131,6 +131,10 @@ L_START:
 		int min = ((memblock[offset+14] & 0b11100000) >> 5) + ((memblock[offset+15] & 0b00000111) << 3);
 		
 		// print results
+		if(sub){
+			printf("\n");
+		}
+		
 		printf("%s\n", name);
 		printf("==================\n");
 		printf("%c %10d %20s %d-%d-%d %02d:%02d\n", file_type, file_size, file_name, year, month, day, h, min);		
