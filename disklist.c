@@ -19,13 +19,10 @@
 // subdirectory struct to keep track of names and locations
 typedef struct subdirectory {
 	char* name;
-	int size;
 	int location;
 	
-	// NECESSARY ???
-	//int next_location;
-	
 } subdirectory;
+
 
 /** Helper Methods **/
 
@@ -112,7 +109,6 @@ L_START:
 				logical_cluster = (int)memblock[offset+26] + ((int)memblock[offset+27] << 8);
 				if (logical_cluster != 0 && logical_cluster != 1) {
 					subdirectories[count].name = file_name;
-					subdirectories[count].size = file_size;
 					subdirectories[count].location = logical_cluster;
 					
 					/*// NECESSARY ?????
@@ -141,8 +137,16 @@ L_START:
 	}
 	
 	// check for another sector
+	int fat = get_fat(memblock, d);
+	if ((fat != 0x00) && ((fat < 0xFF0) || (fat > 0xFFF))) {
+		d = (31+fat)*SECTOR_SIZE;
+		goto L_START;
+	} 
 	
 	// go through subdirectories
+	for (i = 0; i < count; i++) {
+		print_listings(memblock, (31+subdirectories[i].location)*SECTOR_SIZE, 1, subdirectories[i].name);
+	}
 		
 	return;
 }

@@ -129,10 +129,10 @@ L_START:
 	
 	// check for another cluster 												
 	int fat = get_fat(memblock, d);
-		if ((fat != 0x00) && ((fat < 0xFF0) || (fat > 0xFFF))) {
-			d = (31+fat)*SECTOR_SIZE;
-			goto L_START;
-		} 
+	if ((fat != 0x00) && ((fat < 0xFF0) || (fat > 0xFFF))) {
+		d = (31+fat)*SECTOR_SIZE;
+		goto L_START;
+	} 
 		
 	return count;
 }
