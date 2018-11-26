@@ -57,7 +57,7 @@ void get_name(char* memblock, int offset, char* file_name, char* file_extension)
 		file_extension[offset+i] = memblock[offset+i+8];
 	}
 		
-	strcat(file_name, ".", 1);
+	strcat(file_name, ".");
 	strcat(file_name, file_extension);
 }
 
