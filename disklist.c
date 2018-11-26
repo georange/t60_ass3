@@ -57,8 +57,8 @@ void get_name(char* memblock, int offset, char* file_name, char* file_extension)
 		file_extension[offset+i] = memblock[offset+i+8];
 	}
 		
-	strncat(file_name, ".", 1);
-	strncat(file_name, file_extension, strlen(file_extension)+1);
+	strcat(file_name, ".");
+	strcat(file_name, file_extension);
 }
 
 void print_listings(char* memblock, int d, int sub, char* name) {
