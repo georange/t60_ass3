@@ -16,7 +16,7 @@
 #define SECTOR_SIZE 512
 #define MAX_INPUT 256
 
-/** Helper Methods **/
+/** Helper Functions **/
 
 int get_fat(char* memblock, int i) {
 	int entry = 0;
@@ -35,8 +35,6 @@ int get_fat(char* memblock, int i) {
 	}
 	return entry;
 }
-
-/** Disk Parsing Functions **/
 
 void name_and_label(char* memblock, char* name, char* label) {
 	int i;
@@ -83,7 +81,6 @@ int get_free_size(char* memblock, int size) {
 }
 
 int get_num_files(char* memblock, int d, int sub) {
-	//memblock += d;
 	int count = 0;
 	
 	// look for non-free directory entries
@@ -94,6 +91,7 @@ int get_num_files(char* memblock, int d, int sub) {
 	}
 	int offset, logical_cluster;
 
+// loop for traversing multiple sectors of a single subdirectory
 L_START:	
 	for (i = 0; i < lim; i = i+32) {
 		offset = i+d;
@@ -103,8 +101,9 @@ L_START:
 		} else if (memblock[offset+0] == 0xE5) {
 			continue;
 		}
+		// temp variable to denote attribute 
 		char temp = memblock[offset+11];
-		printf("file: %s -- attr: %04x\n", memblock+offset, temp);
+		//printf("file: %s -- attr: %04x\n", memblock+offset, temp);
 		// if a subdirectory is found, go deeper
 		if ((temp & 0x10) && (temp != 0x0F) && !(temp & 0x08)){
 			if (memblock[offset] == '.') {
@@ -115,13 +114,12 @@ L_START:
 			logical_cluster = (int)memblock[offset+26] + ((int)memblock[offset+27] << 8);
 			count = count + get_num_files(memblock, (31+logical_cluster)*SECTOR_SIZE, 1);
 			
-			// check if fat entry leads to another sector
-			int fat = get_fat(memblock, logical_cluster);
+			// check if fat entry leads to another sector and go there
+/*			int fat = get_fat(memblock, logical_cluster);
 			if ((fat != 0x00) && ((fat < 0xFF0) || (fat > 0xFFF))) {
 				d = (31+fat)*SECTOR_SIZE;
 				goto L_START;
-				//count = count + get_num_files(memblock, 31+fat, 1); 
-			} 
+			} */
 		
 		// otherwise, check for 0x0f, and volume label
 		}else if ((temp != 0x0F) && (temp & 0x10) == 0 && (temp & 0x08) == 0) {
@@ -129,15 +127,13 @@ L_START:
 		} 
 	}
 	
-	// if subdirectory continues, find next sector and go there
-/*	if (sub) {
-		int next_cluster = (int)memblock[offset-i+26] + ((int)memblock[offset-i+27] << 8);
-		int fat = get_fat(memblock, next_cluster);
+	// check for another cluster 												
+	int fat = get_fat(memblock, d);
 		if ((fat != 0x00) && ((fat < 0xFF0) || (fat > 0xFFF))) {
-			count = count + get_num_files(memblock, fat, 1);
-		}
-	}
-*/	
+			d = (31+fat)*SECTOR_SIZE;
+			goto L_START;
+		} 
+		
 	return count;
 }
 
