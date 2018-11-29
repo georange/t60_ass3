@@ -100,7 +100,7 @@ L_START:
 			
 			// return location if file found
 			if (!strcmp(target, file_name)) {
-				printf("offset: %d\n", offset);
+				//printf("offset: %d\n", offset);
 				return offset;
 			}
 		}
@@ -126,9 +126,9 @@ L_START:
 	return -1;
 }
 
-void copy_file(char* memblock, char* outblock, int d, int size) {
+void copy_file(char* memblock, char* outblock, int location, int size) {
 	int remaining = size;
-	int logical_cluster = (int)memblock[d+26] + ((int)memblock[d+27] << 8);
+	int logical_cluster = (int)memblock[location+26] + ((int)memblock[location+27] << 8);
 	int p_a = (31+logical_cluster)*SECTOR_SIZE;
 	
 	int i;
@@ -145,7 +145,7 @@ L2_START:
 
 	// check for another sector 
 	int fat = get_fat(memblock, offset);
-	if ((fat != 0x00) && ((fat < 0xFF0) || (fat > 0xFFF))) {
+	if ((fat < 0xFF8) || (fat > 0xFFF)) {
 		p_a = (31+fat)*SECTOR_SIZE;
 		goto L2_START;
 	} 
@@ -202,7 +202,7 @@ int main(int argc, char* argv[]) {
 	
 	
 	printf("file is found!!\n");					// get rid of later plz 
-	printf("location: %d\n", location);
+	//printf("location: %d\n", location);
 	
 	
 	
