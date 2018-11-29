@@ -127,8 +127,8 @@ L_START:
 
 void copy_file(char* memblock, char* outblock, int d, int size) {
 	int remaining = size;
-	int logical_cluster = (int)memblock[d+26] + ((int)memblock[d+27] << 8);
-	int p_a = (31+logical_cluster)*SECTOR_SIZE;
+	//int logical_cluster = (int)memblock[d+26] + ((int)memblock[d+27] << 8);
+	int p_a = (31+d)*SECTOR_SIZE;
 	
 	int i;
 	int offset;
