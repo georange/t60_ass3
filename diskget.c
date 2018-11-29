@@ -198,6 +198,8 @@ int main(int argc, char* argv[]) {
 		return 0;
 	}
 	
+	printf("file is found!!");
+	
 	// find size of file
 	int file_size = (memblock[location+28] & 0xFF) + ((memblock[location+29] & 0xFF) << 8) + 
 								((memblock[location+30] & 0xFF) << 16) + ((memblock[location+31] & 0xFF) << 24);
