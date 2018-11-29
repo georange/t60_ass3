@@ -134,7 +134,7 @@ void copy_file(char* memblock, char* outblock, int d, int size) {
 	int offset;
 L2_START:
 	for (i = 0; i < SECTOR_SIZE; i++) {
-		if (remaining == 0) {
+		if (!remaining) {
 			break;
 		}
 		offset = i+p_a;
@@ -143,7 +143,7 @@ L2_START:
 	}
 
 	// check for another sector 
-	int fat = get_fat(memblock, p_a);
+	int fat = get_fat(memblock, offset);
 	if ((fat != 0x00) && ((fat < 0xFF0) || (fat > 0xFFF))) {
 		p_a = (31+fat)*SECTOR_SIZE;
 		goto L2_START;
@@ -208,7 +208,7 @@ int main(int argc, char* argv[]) {
 	int file_size = (memblock[location+28] & 0xFF) + ((memblock[location+29] & 0xFF) << 8) + 
 								((memblock[location+30] & 0xFF) << 16) + ((memblock[location+31] & 0xFF) << 24);
 
-	printf("%d\n", file_size);
+	//printf("%d\n", file_size);
 	
 	// set up output file to copy to
 	int fd2 = open(argv[2], O_RDWR | O_CREAT, 0666);
