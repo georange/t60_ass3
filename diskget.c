@@ -21,7 +21,6 @@
 
 // subdirectory struct to keep track of names and locations
 typedef struct subdirectory {
-	char* name;
 	int location;
 	
 } subdirectory;
@@ -76,7 +75,6 @@ L_START:
 			if (memblock[offset] != '.') {
 				logical_cluster = (int)memblock[offset+26] + ((int)memblock[offset+27] << 8);
 				if (logical_cluster != 0 && logical_cluster != 1) {
-					subdirectories[count].name = file_name;
 					subdirectories[count].location = logical_cluster;
 					
 					count++;
@@ -118,7 +116,7 @@ L_START:
 
 	// search through subdirectories	
 	for (i = 0; i < count; i++) {
-		int deeper = find_file(memblock, (31+subdirectories[i].location)*SECTOR_SIZE, 1, subdirectories[i].name);
+		int deeper = find_file(memblock, (31+subdirectories[i].location)*SECTOR_SIZE, 1, target);
 		if (deeper > 0) {
 			return deeper;
 		}
