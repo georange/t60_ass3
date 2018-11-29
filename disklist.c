@@ -12,6 +12,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <string.h>
 
 #define SECTOR_SIZE 512
 #define MAX_INPUT 256
@@ -72,8 +73,6 @@ void print_listings(char* memblock, int d, int sub, char* name) {
 	printf("%s\n", name);
 	printf("==================\n");
 
-	
-	// look for non-free directory entries
 	int i;
 	int lim = SECTOR_SIZE*13;
 	if (sub) {
@@ -91,7 +90,7 @@ L_START:
 		} else if (memblock[offset+0] == 0xE5) {
 			continue;
 		}
-		// temp variable to denote attribute
+		// temp variable to denote attribute (for some reason, I get a segmentation fault without it)
 		char temp = memblock[offset+11];
 		
 		// check file type
@@ -107,10 +106,6 @@ L_START:
 		char* file_extension = malloc(sizeof(char));
 		get_name(memblock, offset, file_name, file_extension);
 		
-		// get file size
-		int file_size = (memblock[offset+28] & 0xFF) + ((memblock[offset+29] & 0xFF) << 8) + 
-								((memblock[offset+30] & 0xFF) << 16) + ((memblock[offset+31] & 0xFF) << 24);
-		
 		// save subdirectories for later
 		if(file_type == 'D') {
 			if (memblock[offset] != '.') {
@@ -119,35 +114,35 @@ L_START:
 					subdirectories[count].name = file_name;
 					subdirectories[count].location = logical_cluster;
 					
-					/*// NECESSARY ?????
-					int fat = get_fat(memblock, logical_cluster);
-					if ((fat != 0x00) && ((fat < 0xFF0) || (fat > 0xFFF))) {
-						subdirectories[count].next_location = (31+fat)*SECTOR_SIZE;
-						//goto L_START;
-					} */
 					count++;
 				}
 			}
-		}
+		} 	
 		
+		// get file size
+		int file_size = (memblock[offset+28] & 0xFF) + ((memblock[offset+29] & 0xFF) << 8) + 
+							((memblock[offset+30] & 0xFF) << 16) + ((memblock[offset+31] & 0xFF) << 24);
 		// get times
 		int year = (((memblock[offset+17] & 0b11111110)) >> 1) + 1980;
 		int month = ((memblock[offset+16] & 0b11100000) >> 5) + (((memblock[offset+17] & 0b00000001)) << 3);
 		int day = (memblock[offset+16] & 0b00011111);
-		
+			
 		int h = (memblock[offset+15] & 0b11111000) >> 3;
 		int min = ((memblock[offset+14] & 0b11100000) >> 5) + ((memblock[offset+15] & 0b00000111) << 3);
 		
 		// print results
-		printf("%c %10d %20s %d-%d-%d %02d:%02d\n", file_type, file_size, file_name, year, month, day, h, min);		
+		printf("%c %10d %20s %d-%d-%d %02d:%02d\n", file_type, file_size, file_name, year, month, day, h, min);	
+		
 	}
 	
-	// check for another sector
-	int fat = get_fat(memblock, d);
-	if ((fat != 0x00) && ((fat < 0xFF0) || (fat > 0xFFF))) {
-		d = (31+fat)*SECTOR_SIZE;
-		goto L_START;
-	} 
+	if (sub) {
+		// check for another sector if inside subdirectory
+		int fat = get_fat(memblock, d);
+		if ((fat != 0x00) && ((fat < 0xFF0) || (fat > 0xFFF))) {
+			d = (31+fat)*SECTOR_SIZE;
+			goto L_START;
+		} 
+	}
 	
 	// go through subdirectories
 	for (i = 0; i < count; i++) {

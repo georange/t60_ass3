@@ -83,7 +83,6 @@ int get_free_size(char* memblock, int size) {
 int get_num_files(char* memblock, int d, int sub) {
 	int count = 0;
 	
-	// look for non-free directory entries
 	int i;
 	int lim = SECTOR_SIZE*13;
 	if (sub) {
@@ -101,7 +100,7 @@ L_START:
 		} else if (memblock[offset+0] == 0xE5) {
 			continue;
 		}
-		// temp variable to denote attribute 
+		// temp variable to denote attribute (for some reason, I get a segmentation fault without it)
 		char temp = memblock[offset+11];
 		//printf("file: %s -- attr: %04x\n", memblock+offset, temp);
 		// if a subdirectory is found, go deeper
@@ -113,13 +112,6 @@ L_START:
 			// find first logical cluster and go there
 			logical_cluster = (int)memblock[offset+26] + ((int)memblock[offset+27] << 8);
 			count = count + get_num_files(memblock, (31+logical_cluster)*SECTOR_SIZE, 1);
-			
-			// check if fat entry leads to another sector and go there
-/*			int fat = get_fat(memblock, logical_cluster);
-			if ((fat != 0x00) && ((fat < 0xFF0) || (fat > 0xFFF))) {
-				d = (31+fat)*SECTOR_SIZE;
-				goto L_START;
-			} */
 		
 		// otherwise, check for 0x0f, and volume label
 		}else if ((temp != 0x0F) && (temp & 0x10) == 0 && (temp & 0x08) == 0) {
@@ -127,12 +119,14 @@ L_START:
 		} 
 	}
 	
-	// check for another cluster 												
-	int fat = get_fat(memblock, d);
-	if ((fat != 0x00) && ((fat < 0xFF0) || (fat > 0xFFF))) {
-		d = (31+fat)*SECTOR_SIZE;
-		goto L_START;
-	} 
+	if (sub) {
+		// check for another sector if inside subdirectory
+		int fat = get_fat(memblock, d);
+		if ((fat != 0x00) && ((fat < 0xFF0) || (fat > 0xFFF))) {
+			d = (31+fat)*SECTOR_SIZE;
+			goto L_START;
+		} 
+	}
 		
 	return count;
 }
