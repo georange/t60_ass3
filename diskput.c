@@ -86,6 +86,7 @@ int main(int argc, char* argv[]) {
 	
 	// parse for file and subdirectory names if given
 	char* input = argv[2];
+	char* file_name = argv[2];
 	char* subdirectories[MAX_INPUT];
 	char* tok;
 	int count = 0;
@@ -98,6 +99,7 @@ int main(int argc, char* argv[]) {
 			subdirectories[count] = tok;
 			count++;
 		}
+		file_name = subdirectories[count-2];
 	}
 	
 // testing
@@ -105,8 +107,8 @@ int main(int argc, char* argv[]) {
 	for (i = 0; i < count-1; i++) {
 		printf("%s\n", subdirectories[i]);
 	}
-	
 	printf("%s\n", subdirectories[count-2]);
+	printf("%d\n", strlen(subdirectories);
 	
 	
 	// check if disk has room for input file
