@@ -92,12 +92,10 @@ int main(int argc, char* argv[]) {
 	int count = 0;
 	if (input[0] == '/') {
 		tok = strtok (input, "/");
-		subdirectories[count] = tok;
-		count++;
 		while(tok) {
-			tok = strtok(NULL, "/");
 			subdirectories[count] = tok;
 			count++;
+			tok = strtok(NULL, "/");
 		}
 		count = count - 1;
 		file_name = subdirectories[count-1];
