@@ -110,7 +110,7 @@ int main(int argc, char* argv[]) {
 	//}
 	//printf("%s\n", subdirectories[count]);	
 	//printf("%s\n", file_name);	
-	printf("%z\n",strlen(subdirectories));
+	printf("len = %zu\n",sizeof(subdirectories)/sizeof(subdirectories[0]));
 	
 	
 	// set up file to copy into disk 
