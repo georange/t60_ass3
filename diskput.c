@@ -90,6 +90,7 @@ int main(int argc, char* argv[]) {
 	char* tok;
 	int count;
 	if (input[1] == '/') {
+		printf("HEY\n");
 		tok = strtok (input, "/");
 		while (tok) {
 			subdirectories[count] = strtok(NULL, "/");
