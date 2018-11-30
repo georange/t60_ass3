@@ -117,7 +117,9 @@ L_START:
 			if (memblock[offset] != '.') {
 				logical_cluster = (int)memblock[offset+26] + ((int)memblock[offset+27] << 8);
 				if (logical_cluster != 0 && logical_cluster != 1) {
-					subdirectories[count].name = file_name;
+					char* sub_name = strcat(name, "/");
+					sub_name = strcat(name, file_name);
+					subdirectories[count].name = sub_name;
 					subdirectories[count].location = logical_cluster;
 					
 					count++;
