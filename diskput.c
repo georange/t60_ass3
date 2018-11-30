@@ -104,26 +104,60 @@ int main(int argc, char* argv[]) {
 	}
 	
 // testing prints
-	int i;
-	for (i = 0; i < count-1; i++) {
+	//int i;
+	//for (i = 0; i < count-1; i++) {
 		//printf("%s\n", subdirectories[i]);
-	}
+	//}
 	//printf("%s\n", subdirectories[count]);	
-	printf("%s\n", file_name);	
+	//printf("%s\n", file_name);	
+	printf(strlen(subdirectories));
+	
+	
+	// set up file to copy into disk 
+	int fd2 = open(file_name, O_RDWR);
+	if (fd2 < 0) {
+		printf("File not found.\n");
+		munmap(memblock, buff.st_size);
+		close(fd);
+		exit(1);
+	}
+	struct stat buff2;
+	fstat(fd2, &buff2);
+	int file_size = buff2.st_size;
+	char* inblock = mmap(NULL, file_size, PROT_READ, MAP_SHARED, fd2, 0);
+	if (inblock == MAP_FAILED) {
+		printf("Error: could not map input file memory.\n");
+		munmap(memblock, buff.st_size);
+		close(fd);
+		close(fd2);
+		exit(1);
+	}
 	
 	// check if disk has room for input file
 	int total_size = get_total_size(memblock);
 	int free_size = get_free_size(memblock, total_size);
 	
-		// search for location of subdirectory
+	if (free_size < file_size) {
+		printf("Not enough free space in the disk image.\n");
+		munmap(memblock, buff.st_size);
+		munmap(inblock, file_size);
+		close(fd);
+		close(fd2);
+		exit(1);
+	}
 	
-	// copy file to location
+
+	// search for location of subdirectory
+	
+	// copy file to location ***
 
 	
 	
 	// clean up
 	munmap(memblock, buff.st_size);
+	munmap(inblock, file_size);
 	close(fd);
+	close(fd2);
 	
 	return 0;
 }
