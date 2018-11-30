@@ -100,7 +100,6 @@ L_START:
 			
 			// return location if file found
 			if (!strcmp(target, file_name)) {
-				//printf("offset: %d\n", offset);
 				return offset;
 			}
 		}
@@ -127,7 +126,7 @@ L_START:
 }
 
 void copy_file(char* memblock, char* outblock, int location, int size) {
-/*	int remaining = size;
+	int remaining = size;
 	int logical_cluster = (int)memblock[location+26] + ((int)memblock[location+27] << 8);
 	int p_a = (31+logical_cluster)*SECTOR_SIZE;
 	
@@ -150,27 +149,7 @@ L2_START:
 		goto L2_START;
 	} 
 	
-	return; */
-	int remaining = size;
-	int logical_cluster = (int)memblock[location+26] + ((int)memblock[location+27] << 8);
-	int p_a = (31+logical_cluster)*SECTOR_SIZE;
-	int n = logical_cluster;
-	
-	do {
-		n = (remaining == size) ? logical_cluster : get_fat(memblock, n);
-		p_a = SECTOR_SIZE * (31 + n);
-
-		int i;
-		for (i = 0; i < SECTOR_SIZE; i++) {
-			if (remaining == 0) {
-				break;
-			}
-			outblock[size - remaining] = memblock[i + p_a];
-			remaining--;
-		}
-	} while (get_fat(memblock, n) != 0xFFF);
-	
-	return;
+	return; 
 }
 
 

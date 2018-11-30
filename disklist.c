@@ -55,11 +55,17 @@ void get_name(char* memblock, int offset, char* file_name, char* file_extension)
 	}
 		
 	for (i = 0; i < 3; i++) {
+		if (memblock[offset+i+8] == 0 || memblock[offset+i+8] == ' '){
+            file_extension[i] = 0;
+            break;
+        }
 		file_extension[offset+i] = memblock[offset+i+8];
 	}
 		
-	strcat(file_name, ".");
-	strcat(file_name, file_extension);
+	if (file_extension[0]!=0 && 0!=strncmp(file_extension,"   ",3)) {
+        strcat(file_name, ".");
+        strcat(file_name, file_extension);
+	}
 }
 
 void print_listings(char* memblock, int d, int sub, char* name) {
@@ -102,8 +108,8 @@ L_START:
 		}
 
 		// find file name and extention
-		char* file_name = malloc(sizeof(char));
-		char* file_extension = malloc(sizeof(char));
+		char* file_name = malloc(13*sizeof(char));
+		char* file_extension = malloc(3*sizeof(char));
 		get_name(memblock, offset, file_name, file_extension);
 		
 		// save subdirectories for later

@@ -17,9 +17,33 @@
 #define SECTOR_SIZE 512
 #define MAX_INPUT 256
 
+int get_total_size(char* memblock) {
+	int total_sectors = memblock[19] + (memblock[20] << 8);
+	int total_size = total_sectors * SECTOR_SIZE;
+
+	return total_size;
+}
+
+int get_free_size(char* memblock, int size) {
+	int free_spaces = 0;
+
+	// traverse the FAT table
+	int i;
+	for (i = 2; i < (size/SECTOR_SIZE); i++) {
+		int entry = get_fat(memblock, i);
+		
+		// if entry is 0x000, it is free
+		if (!entry) {
+			free_spaces++;
+		}
+	}
+	int free_space = free_spaces * SECTOR_SIZE;
+	return free_space;
+}
+
 int main(int argc, char* argv[]) {
 	if (argc < 3) {
-		printf("Error: disk image and file name needed as argument.\n");
+		printf("Error: disk image and file name (with/without location) needed as argument.\n");
 		exit(1);
 	}
 	// open disk image and map memory
@@ -41,8 +65,33 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 	
+	// parse for file and subdirectory names if given
+	char* input = argv[2];
+	char* subdirectories[MAX_INPUT];
+	int count;
+	if (input[1] == '/') {
+		char* tok = strtok (input, '/');
+		while (tok) {
+			subdirectories[count] = strtok(NULL, '/');
+			count++;
+		}
+	}
 	
-	// HERE
+// testing
+	int i;
+	for (i = 0; i < count; i++) {
+		printf("%s\n", subdirectories[i]);
+	}
+	
+	
+	// check if disk has room for input file
+	int total_size = get_total_size(memblock);
+	int free_size = get_free_size(memblock, total_size);
+	
+		// search for location of subdirectory
+	
+	// copy file to location
+
 	
 	
 	// clean up
