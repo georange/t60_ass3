@@ -104,14 +104,14 @@ int main(int argc, char* argv[]) {
 	}
 	
 // testing prints
-	//int i;
-	//for (i = 0; i < count-1; i++) {
-		//printf("%s\n", subdirectories[i]);
-	//}
-	//printf("%s\n", subdirectories[count]);	
+	int i;
+	for (i = 0; i < count-1; i++) {
+		printf("%s\n", subdirectories[i]);
+	}
+	printf("%s\n", subdirectories[count]);	
 	//printf("%s\n", file_name);	
-	printf("count = %d\n", count);	
-	printf("len = %zu\n",sizeof(subdirectories)/sizeof(subdirectories[0]));
+	//printf("count = %d\n", count);	
+	//printf("len = %zu\n",sizeof(subdirectories)/sizeof(subdirectories[0]));
 	
 	
 	// set up file to copy into disk 
