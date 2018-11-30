@@ -103,12 +103,13 @@ int main(int argc, char* argv[]) {
 		file_name = subdirectories[count];
 	}
 	
-// testing
+// testing prints
 	int i;
 	for (i = 0; i < count-1; i++) {
 		//printf("%s\n", subdirectories[i]);
 	}
-	printf("%s\n", subdirectories[count]);	
+	//printf("%s\n", subdirectories[count]);	
+	printf("%s\n", file_name);	
 	
 	// check if disk has room for input file
 	int total_size = get_total_size(memblock);
