@@ -68,11 +68,12 @@ int main(int argc, char* argv[]) {
 	// parse for file and subdirectory names if given
 	char* input = argv[2];
 	char* subdirectories[MAX_INPUT];
+	char* tok;
 	int count;
 	if (input[1] == '/') {
-		char* tok = strtok (input, '/');
+		tok = strtok (input, "/");
 		while (tok) {
-			subdirectories[count] = strtok(NULL, '/');
+			subdirectories[count] = strtok(NULL, "/");
 			count++;
 		}
 	}
