@@ -106,7 +106,7 @@ int main(int argc, char* argv[]) {
 		printf("%s\n", subdirectories[i]);
 	}
 	printf("%s\n", subdirectories[count-1]);	
-	//printf("%s\n", file_name);	
+	printf("%s\n", file_name);	
 	printf("count = %d\n", count);	
 	//printf("len = %zu\n",sizeof(subdirectories)/sizeof(subdirectories[0]));
 	
