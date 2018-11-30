@@ -99,18 +99,18 @@ int main(int argc, char* argv[]) {
 			subdirectories[count] = tok;
 			count++;
 		}
-		count = count - 2;
-		file_name = subdirectories[count];
+		count = count - 1;
+		file_name = subdirectories[count-1];
 	}
 	
 // testing prints
 	int i;
-	for (i = 0; i < count-1; i++) {
+	for (i = 0; i < count; i++) {
 		printf("%s\n", subdirectories[i]);
 	}
-	printf("%s\n", subdirectories[count]);	
+	printf("%s\n", subdirectories[count-1]);	
 	//printf("%s\n", file_name);	
-	//printf("count = %d\n", count);	
+	printf("count = %d\n", count);	
 	//printf("len = %zu\n",sizeof(subdirectories)/sizeof(subdirectories[0]));
 	
 	
