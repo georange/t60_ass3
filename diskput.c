@@ -97,7 +97,6 @@ int main(int argc, char* argv[]) {
 			count++;
 			tok = strtok(NULL, "/");
 		}
-		count = count - 1;
 		file_name = subdirectories[count-1];
 	}
 	
