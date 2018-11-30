@@ -13,9 +13,28 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <time.h>
+#include <string.h>
 
 #define SECTOR_SIZE 512
 #define MAX_INPUT 256
+
+int get_fat(char* memblock, int i) {
+	int entry = 0;
+	int byte1 = 0;
+	int byte2 = 0;
+		
+	// compute entry content
+	if ((i % 2) == 0) {
+		byte1 = memblock[SECTOR_SIZE + (int)((3*i)/2)+1] & 0b00001111;
+		byte2 = memblock[SECTOR_SIZE + (int)((3*i)/2)] & 0b11111111;
+		entry = (byte1 << 8) + byte2;
+	} else {
+		byte1 = memblock[SECTOR_SIZE + (int)((3*i)/2)] & 0b00001111;
+		byte2 = memblock[SECTOR_SIZE + (int)((3*i)/2)+1] & 0b11111111;
+		entry = (byte1 >> 4) + (byte2 << 4);
+	}
+	return entry;
+}
 
 int get_total_size(char* memblock) {
 	int total_sectors = memblock[19] + (memblock[20] << 8);
