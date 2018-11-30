@@ -105,10 +105,10 @@ int main(int argc, char* argv[]) {
 // testing
 	int i;
 	for (i = 0; i < count-1; i++) {
-		printf("%s\n", subdirectories[i]);
+		//printf("%s\n", subdirectories[i]);
 	}
-	printf("%s\n", subdirectories[count-2]);
-	printf("%d\n", strlen(subdirectories);
+	//printf("%s\n", subdirectories[count-2]);
+	printf("%d\n", strlen(subdirectories));
 	
 	
 	// check if disk has room for input file
