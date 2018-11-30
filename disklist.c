@@ -117,8 +117,10 @@ L_START:
 			if (memblock[offset] != '.') {
 				logical_cluster = (int)memblock[offset+26] + ((int)memblock[offset+27] << 8);
 				if (logical_cluster != 0 && logical_cluster != 1) {
-					char* sub_name = strcat(name, "/");
-					sub_name = strcat(name, file_name);
+					char* sub_name = malloc((strlen(name)+strlen(file_name)+1)*sizeof(char));
+					sub_name = name;
+					strcat(sub_name, "/");
+					strcat(sub_name, file_name);
 					subdirectories[count].name = sub_name;
 					subdirectories[count].location = logical_cluster;
 					
