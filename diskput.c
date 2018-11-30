@@ -106,6 +106,8 @@ int main(int argc, char* argv[]) {
 		printf("%s\n", subdirectories[i]);
 	}
 	
+	printf("%s\n", subdirectories[count-2]);
+	
 	
 	// check if disk has room for input file
 	int total_size = get_total_size(memblock);
