@@ -89,7 +89,7 @@ int main(int argc, char* argv[]) {
 	char* subdirectories[MAX_INPUT];
 	char* tok;
 	int count;
-	if (input[1] == '/') {
+	if (input[0] == '/') {
 		printf("HEY\n");
 		tok = strtok (input, "/");
 		while (tok) {
