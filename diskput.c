@@ -102,7 +102,7 @@ int main(int argc, char* argv[]) {
 	
 // testing
 	int i;
-	for (i = 0; i < count; i++) {
+	for (i = 0; i < count-1; i++) {
 		printf("%s\n", subdirectories[i]);
 	}
 	
