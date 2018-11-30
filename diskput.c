@@ -88,10 +88,12 @@ int main(int argc, char* argv[]) {
 	char* input = argv[2];
 	char* subdirectories[MAX_INPUT];
 	char* tok;
-	int count;
+	int count = 0;
 	if (input[0] == '/') {
 		tok = strtok (input, "/");
-		while (tok) {
+		subdirectories[count] = tok;
+		count++;
+		while(tok) {
 			tok = strtok(NULL, "/");
 			subdirectories[count] = tok;
 			count++;
