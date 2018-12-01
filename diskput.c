@@ -108,7 +108,7 @@ L_START:
 				if (curr_target < num_subs) {
 					logical_cluster = (int)memblock[offset+26] + ((int)memblock[offset+27] << 8);
 					if (logical_cluster != 0 && logical_cluster != 1) {
-						int deeper = find_sub(memblock, (31+logical_cluster)*SECTOR_SIZE, 1, num_subs, curr_target+1);
+						int deeper = find_sub(memblock, (31+logical_cluster)*SECTOR_SIZE, 1, subs, num_subs, curr_target+1);
 						if (deeper > 0) {
 							return deeper;
 						}
