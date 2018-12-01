@@ -179,7 +179,7 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 	
-	// convert fime name to upper case
+	// convert file name to upper case
 	char* name = argv[2];
 	char* s = name;
 	while (*s) {

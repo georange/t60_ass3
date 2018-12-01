@@ -84,16 +84,6 @@ L_START:
 
 		// if a subdirectory is found, check for the name
 		if ((temp & 0x10)){
-			if (memblock[offset] != '.') {
-				logical_cluster = (int)memblock[offset+26] + ((int)memblock[offset+27] << 8);
-				if (logical_cluster != 0 && logical_cluster != 1) {
-					subdirectories[count].location = logical_cluster;
-					
-					count++;
-				}
-			}
-		} else {
-			// otherwise, check if file name matches the target file
 			char* file_name = malloc(sizeof(char));
 			char* file_extension = malloc(sizeof(char));
 			int j;
@@ -107,12 +97,23 @@ L_START:
 				file_extension[j] = memblock[offset+j+8];
 			}
 
-			strcat(file_name, ".");
-			strcat(file_name, file_extension);
+			//strcat(file_name, ".");
+			//strcat(file_name, file_extension);
 			
-			// return location if file found
-			if (!strcmp(target, file_name)) {
-				return offset;
+			// if a matching name is found
+			if (!strcmp(subs[curr_target], file_name)) {
+				// go deeper if necessary
+				if (curr_target < num_subs) {
+					logical_cluster = (int)memblock[offset+26] + ((int)memblock[offset+27] << 8);
+					if (logical_cluster != 0 && logical_cluster != 1) {
+						int deeper = find_sub(memblock, (31+logical_cluster)*SECTOR_SIZE, 1, num_subs, curr_target+1);
+						if (deeper > 0) {
+							return deeper;
+						}
+					}
+				} else {
+					return offset;
+				}
 			}
 		}
 	}
@@ -124,14 +125,6 @@ L_START:
 			d = (31+fat)*SECTOR_SIZE;
 			goto L_START;
 		} 
-	}
-
-	// search through subdirectories	
-	for (i = 0; i < count; i++) {
-		int deeper = find_file(memblock, (31+subdirectories[i].location)*SECTOR_SIZE, 1, target);
-		if (deeper > 0) {
-			return deeper;
-		}
 	}
 	
 	return -1;
@@ -175,6 +168,17 @@ int main(int argc, char* argv[]) {
 			tok = strtok(NULL, "/");
 		}
 		file_name = subdirectories[count-1];
+	}
+	
+	int i;
+	for (i = 0; i < count; i++) {
+		// convert names to upper case
+		char* s = subdirectories[i];
+		while (*s) {
+			*s = toupper((unsigned char) *s);
+			s++;
+		}
+		printf("%s\n", subdirectories[i]);
 	}
 	
 // testing prints
@@ -233,6 +237,8 @@ int main(int argc, char* argv[]) {
 			exit(1);
 		}
 	} 
+	
+	printf("%d",location);
 	
 	
 	
