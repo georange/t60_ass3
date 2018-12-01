@@ -62,7 +62,10 @@ int get_free_size(char* memblock, int size) {
 	return free_space;
 }
 
+// helper method for finding the location of the subdirectory to copy to
 int find_sub(char* memblock, int d, int sub, char** subs, int num_subs, int curr_target) {
+	
+	printf("RUNS\n");
 	
 	int i;
 	int lim = SECTOR_SIZE*13;
