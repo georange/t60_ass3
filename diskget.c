@@ -144,7 +144,7 @@ L2_START:
 	}
 
 	// check for another sector 
-	int fat = get_fat(memblock, logical_cluster);
+	fat = get_fat(memblock, logical_cluster);
 	if ((fat != 0x00) && ((fat < 0xFF0) || (fat > 0xFFF))) {
 		p_a = (31+fat)*SECTOR_SIZE;
 		logical_cluster = fat;
