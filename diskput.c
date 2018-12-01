@@ -29,7 +29,7 @@ int get_fat(char* memblock, int i) {
 		byte2 = memblock[SECTOR_SIZE + (int)((3*i)/2)] & 0b11111111;
 		entry = (byte1 << 8) + byte2;
 	} else {
-		byte1 = memblock[SECTOR_SIZE + (int)((3*i)/2)] & 0b00001111;
+		byte1 = memblock[SECTOR_SIZE + (int)((3*i)/2)] & 0b11110000;
 		byte2 = memblock[SECTOR_SIZE + (int)((3*i)/2)+1] & 0b11111111;
 		entry = (byte1 >> 4) + (byte2 << 4);
 	}
@@ -58,6 +58,83 @@ int get_free_size(char* memblock, int size) {
 	}
 	int free_space = free_spaces * SECTOR_SIZE;
 	return free_space;
+}
+
+int find_sub(char* memblock, int d, int sub, char** subs, int num_subs, int curr_target) {
+	
+	int i;
+	int lim = SECTOR_SIZE*13;
+	if (sub) {
+		lim = SECTOR_SIZE;
+	}
+	int offset, logical_cluster;
+
+// loop for traversing multiple sectors of a single subdirectory
+L_START:	
+	for (i = 0; i < lim; i = i+32) {
+		offset = i+d;
+		// skip free directory entries
+		if (memblock[offset+0] == 0x00){
+			break;
+		} else if (memblock[offset+0] == 0xE5) {
+			continue;
+		}
+		// temp variable to denote attribute (for some reason, I get a segmentation fault without it)
+		char temp = memblock[offset+11];
+
+		// if a subdirectory is found, check for the name
+		if ((temp & 0x10)){
+			if (memblock[offset] != '.') {
+				logical_cluster = (int)memblock[offset+26] + ((int)memblock[offset+27] << 8);
+				if (logical_cluster != 0 && logical_cluster != 1) {
+					subdirectories[count].location = logical_cluster;
+					
+					count++;
+				}
+			}
+		} else {
+			// otherwise, check if file name matches the target file
+			char* file_name = malloc(sizeof(char));
+			char* file_extension = malloc(sizeof(char));
+			int j;
+			for (j = 0; j < 8; j++) {
+				if (memblock[offset+j] == ' ') {
+					break;
+				}
+				file_name[j] = memblock[offset+j];
+			}
+			for (j = 0; j < 3; j++) {
+				file_extension[j] = memblock[offset+j+8];
+			}
+
+			strcat(file_name, ".");
+			strcat(file_name, file_extension);
+			
+			// return location if file found
+			if (!strcmp(target, file_name)) {
+				return offset;
+			}
+		}
+	}
+	
+	if (sub) {
+		// check for another sector if inside subdirectory
+		int fat = get_fat(memblock, d);
+		if ((fat != 0x00) && ((fat < 0xFF0) || (fat > 0xFFF))) {
+			d = (31+fat)*SECTOR_SIZE;
+			goto L_START;
+		} 
+	}
+
+	// search through subdirectories	
+	for (i = 0; i < count; i++) {
+		int deeper = find_file(memblock, (31+subdirectories[i].location)*SECTOR_SIZE, 1, target);
+		if (deeper > 0) {
+			return deeper;
+		}
+	}
+	
+	return -1;
 }
 
 int main(int argc, char* argv[]) {
@@ -101,13 +178,13 @@ int main(int argc, char* argv[]) {
 	}
 	
 // testing prints
-	int i;
+/*	int i;
 	for (i = 0; i < count; i++) {
 		printf("%s\n", subdirectories[i]);
 	}
 	printf("%s\n", subdirectories[count-1]);	
 	printf("%s\n", file_name);	
-	printf("count = %d\n", count);	
+	printf("count = %d\n", count);	*/
 	//printf("len = %zu\n",sizeof(subdirectories)/sizeof(subdirectories[0]));
 	
 	
@@ -134,7 +211,6 @@ int main(int argc, char* argv[]) {
 	// check if disk has room for input file
 	int total_size = get_total_size(memblock);
 	int free_size = get_free_size(memblock, total_size);
-	
 	if (free_size < file_size) {
 		printf("Not enough free space in the disk image.\n");
 		munmap(memblock, buff.st_size);
@@ -144,7 +220,22 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 	
-	// search for location of subdirectory
+	// search for location of subdirectory if required, otherwise file is copied to the root directory
+	int location = SECTOR_SIZE*19;
+	if (count) {
+		location = find_sub(memblock, SECTOR_SIZE*19, 0, subdirectories, count-1, 0);
+		if (location < 0) {
+			printf("The directory not found.\n");
+			munmap(memblock, buff.st_size);
+			munmap(inblock, file_size);
+			close(fd);
+			close(fd2);
+			exit(1);
+		}
+	} 
+	
+	
+	
 	
 	// copy file to location ***
 

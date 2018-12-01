@@ -29,7 +29,7 @@ int get_fat(char* memblock, int i) {
 		byte2 = memblock[SECTOR_SIZE + (int)((3*i)/2)] & 0b11111111;
 		entry = (byte1 << 8) + byte2;
 	} else {
-		byte1 = memblock[SECTOR_SIZE + (int)((3*i)/2)] & 0b00001111;
+		byte1 = memblock[SECTOR_SIZE + (int)((3*i)/2)] & 0b11110000;
 		byte2 = memblock[SECTOR_SIZE + (int)((3*i)/2)+1] & 0b11111111;
 		entry = (byte1 >> 4) + (byte2 << 4);
 	}
