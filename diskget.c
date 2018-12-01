@@ -203,7 +203,7 @@ int main(int argc, char* argv[]) {
 	
 	
 	printf("file is found!!\n");					// get rid of later plz 
-	//printf("location: %d\n", location);
+	printf("location: %d\n", location);
 	
 	
 	
