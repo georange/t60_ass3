@@ -14,6 +14,8 @@
 #include <unistd.h>
 #include <time.h>
 #include <string.h>
+#include <stdio.h>
+#include <ctype.h>
 
 #define SECTOR_SIZE 512
 #define MAX_INPUT 256
