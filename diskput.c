@@ -110,7 +110,7 @@ L_START:
 			// if a matching name is found
 			if (!strcmp(subs[curr_target], file_name)) {
 				// go deeper if necessary
-				if (curr_target < num_subs) {
+				if (curr_target < num_subs-1) {
 					logical_cluster = (int)memblock[offset+26] + ((int)memblock[offset+27] << 8);
 					if (logical_cluster != 0 && logical_cluster != 1) {
 						int deeper = find_sub(memblock, (31+logical_cluster)*SECTOR_SIZE, 1, subs, num_subs, curr_target+1);
