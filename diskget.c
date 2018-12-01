@@ -129,13 +129,14 @@ void copy_file(char* memblock, char* outblock, int location, int size) {
 	int remaining = size;
 	int logical_cluster = (int)memblock[location+26] + ((int)memblock[location+27] << 8);
 	int p_a = (31+logical_cluster)*SECTOR_SIZE;
+	int fat;
 	
 	int i;
 	int offset;
 L2_START:
 	for (i = 0; i < SECTOR_SIZE; i++) {
 		if (!remaining) {
-			break;
+			return;
 		}
 		offset = i+p_a;
 		outblock[size - remaining] = memblock[offset];
@@ -143,9 +144,10 @@ L2_START:
 	}
 
 	// check for another sector 
-	int fat = get_fat(memblock, p_a);
+	int fat = get_fat(memblock, logical_cluster);
 	if ((fat != 0x00) && ((fat < 0xFF0) || (fat > 0xFFF))) {
 		p_a = (31+fat)*SECTOR_SIZE;
+		logical_cluster = fat;
 		goto L2_START;
 	} 
 	
