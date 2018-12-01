@@ -172,16 +172,7 @@ int main(int argc, char* argv[]) {
 		file_name = subdirectories[count-1];
 	}
 	
-	int i;
-	for (i = 0; i < count; i++) {
-		// convert names to upper case
-		char* s = subdirectories[i];
-		while (*s) {
-			*s = toupper((unsigned char) *s);
-			s++;
-		}
-		printf("%s\n", subdirectories[i]);
-	}
+	
 	
 // testing prints
 /*	int i;
@@ -224,6 +215,17 @@ int main(int argc, char* argv[]) {
 		close(fd);
 		close(fd2);
 		exit(1);
+	}
+	
+	// convert names to upper case
+	int i;
+	for (i = 0; i < count; i++) {
+		char* s = subdirectories[i];
+		while (*s) {
+			*s = toupper((unsigned char) *s);
+			s++;
+		}
+		printf("%s\n", subdirectories[i]);
 	}
 	
 	// search for location of subdirectory if required, otherwise file is copied to the root directory
