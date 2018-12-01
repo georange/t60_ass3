@@ -98,6 +98,8 @@ L_START:
 			for (j = 0; j < 3; j++) {
 				file_extension[j] = memblock[offset+j+8];
 			}
+			
+			printf("%s\n", file_name);
 
 			//strcat(file_name, ".");
 			//strcat(file_name, file_extension);
@@ -242,7 +244,7 @@ int main(int argc, char* argv[]) {
 		}
 	} 
 	
-	printf("location: %d",location);
+	printf("location: %d\n",location);
 	
 	
 	
