@@ -407,7 +407,7 @@ int main(int argc, char* argv[]) {
 		}
 	} 
 	
-	//printf("location: %d\n",location);
+	printf("location: %d\n",location);
 	
 	// copy file to location ***
 	copy_file(memblock, inblock, location, file_name, file_size, sub);
