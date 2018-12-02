@@ -174,7 +174,7 @@ void set_fat(char* memblock, int i, int next) {
 }
 
 // updates the directory to include the file we are copying in 
-void update_directory(char* memblock, int d, char* name, char* size, int free_fat, int sub) {
+void update_directory(char* memblock, int d, char* name, int size, int free_fat, int sub) {
 	// find free directory slot
 	int i;
 	int lim = SECTOR_SIZE*13;
@@ -275,7 +275,7 @@ void copy_file(char* memblock, char* inblock, int d, char* name, int size, int s
 	// updates the directory entry at the location
 	update_directory(memblock, d, name, size, free_fat, sub);
 	
-	while (bytesRemaining > 0) {
+	while (remaining > 0) {
 		int p_a = (31+free_fat)*SECTOR_SIZE;
 		
 		int i;
