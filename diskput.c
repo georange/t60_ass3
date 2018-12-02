@@ -252,7 +252,7 @@ L2_START:
 	memblock[17+offset] = (memblock[17+offset]|(month - ((memblock[16+offset] & 0b11100000) >> 5)) >> 3);
 	memblock[16+offset] = (memblock[16+offset]|(month - (((memblock[17+offset] & 0b00000001)) << 3)) << 5);
 	memblock[16+offset] = (memblock[16+offset]|(day & 0b00011111));
-	memblock[15+offset] = (memblock[15+offset]|(h << 3) & 0b11111000);
+	memblock[15+offset] = (memblock[15+offset]|((h << 3) & 0b11111000));
 	memblock[15+offset] = (memblock[15+offset]|(min - ((memblock[14+offset] & 0b11100000) >> 5)) >> 3);
 	memblock[14+offset] = (memblock[14+offset]|(min - ((memblock[15+offset] & 0b00000111) << 3)) << 5);
 
