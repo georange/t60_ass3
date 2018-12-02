@@ -151,7 +151,7 @@ L_START:
 }
 
 // helper for finding the first available fat entry starting at a given location
-int get_free_fat (memblock, int d) {
+int get_free_fat (char* memblock, int d) {
 
 	int i = 2;
 	int offset = i+d;
@@ -207,7 +207,7 @@ L2_START:
 		int next_free_fat = get_free_fat(memblock, free_fat+1);
 		
 		// set this sector's fat entry to point at next free fat and copy file to there
-		set_fat(memblock, fat, next_free_fat)
+		set_fat(memblock, fat, next_free_fat);
 		offset = (31+next_free_fat)*SECTOR_SIZE;
 	
 	// if an open space is not found and we are not in a subdirectory, exit
