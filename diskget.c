@@ -28,6 +28,7 @@ typedef struct subdirectory {
 
 /** Helper Methods **/
 
+// helper for finding a specific fat entry
 int get_fat(char* memblock, int i) {
 	int entry = 0;
 	int byte1 = 0;
@@ -46,6 +47,12 @@ int get_fat(char* memblock, int i) {
 	return entry;
 }
 
+/* a helper method for finding the location of the file to copy out
+
+	- sub is a flag that denotes whether or not we are in a subdirectory or the root directory 
+	- target is the name of the file we are searching for
+
+*/
 int find_file(char* memblock, int d, int sub, char* target) {
 	int count = 0;
 	struct subdirectory subdirectories[MAX_INPUT];
@@ -125,6 +132,7 @@ L_START:
 	return -1;
 }
 
+// copies the file at a specified location and size out
 void copy_file(char* memblock, char* outblock, int location, int size) {
 	int remaining = size;
 	int logical_cluster = (int)memblock[location+26] + ((int)memblock[location+27] << 8);
@@ -133,6 +141,7 @@ void copy_file(char* memblock, char* outblock, int location, int size) {
 	
 	int i;
 	int offset;
+// a loop for traversing multiple sectors of a subdirectory if necessary
 L2_START:
 	for (i = 0; i < SECTOR_SIZE; i++) {
 		if (!remaining) {

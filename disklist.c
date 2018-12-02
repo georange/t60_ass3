@@ -27,6 +27,7 @@ typedef struct subdirectory {
 
 /** Helper Methods **/
 
+// helper for finding a specific fat entry
 int get_fat(char* memblock, int i) {
 	int entry = 0;
 	int byte1 = 0;
@@ -45,6 +46,7 @@ int get_fat(char* memblock, int i) {
 	return entry;
 }
 
+// helper for getting the full name (+ extention) of each file
 void get_name(char* memblock, int offset, char* file_name, char* file_extension) {
 	int i;
 	for (i = 0; i < 8; i++) {
@@ -68,6 +70,7 @@ void get_name(char* memblock, int offset, char* file_name, char* file_extension)
 	}
 }
 
+// finds every file and prints them out 
 void print_listings(char* memblock, int d, int sub, char* name) {
 	int count = 0;
 	struct subdirectory subdirectories[MAX_INPUT];

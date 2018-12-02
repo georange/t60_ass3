@@ -18,6 +18,7 @@
 
 /** Helper Functions **/
 
+// helper for finding a specific fat entry
 int get_fat(char* memblock, int i) {
 	int entry = 0;
 	int byte1 = 0;
@@ -36,6 +37,7 @@ int get_fat(char* memblock, int i) {
 	return entry;
 }
 
+// helper for finding the name and label of a disk
 void name_and_label(char* memblock, char* name, char* label) {
 	int i;
 	for (i = 0; i < 8; i++) {
@@ -56,6 +58,7 @@ void name_and_label(char* memblock, char* name, char* label) {
 	}
 }
 
+// helper for finding total size of a disk
 int get_total_size(char* memblock) {
 	int total_sectors = memblock[19] + (memblock[20] << 8);
 	int total_size = total_sectors * SECTOR_SIZE;
@@ -63,6 +66,7 @@ int get_total_size(char* memblock) {
 	return total_size;
 }
 
+// helper for finding free size of a disk
 int get_free_size(char* memblock, int size) {
 	int free_spaces = 0;
 
@@ -80,6 +84,7 @@ int get_free_size(char* memblock, int size) {
 	return free_space;
 }
 
+// counts every file in the disk
 int get_num_files(char* memblock, int d, int sub) {
 	int count = 0;
 	

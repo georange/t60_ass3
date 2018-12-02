@@ -20,6 +20,10 @@
 #define SECTOR_SIZE 512
 #define MAX_INPUT 256
 
+
+/** Helper Methods **/
+
+// helper for finding a specific fat entry
 int get_fat(char* memblock, int i) {
 	int entry = 0;
 	int byte1 = 0;
@@ -38,6 +42,7 @@ int get_fat(char* memblock, int i) {
 	return entry;
 }
 
+// helper for finding total size of a disk
 int get_total_size(char* memblock) {
 	int total_sectors = memblock[19] + (memblock[20] << 8);
 	int total_size = total_sectors * SECTOR_SIZE;
@@ -45,6 +50,7 @@ int get_total_size(char* memblock) {
 	return total_size;
 }
 
+// helper for finding free size of a disk
 int get_free_size(char* memblock, int size) {
 	int free_spaces = 0;
 
@@ -62,7 +68,14 @@ int get_free_size(char* memblock, int size) {
 	return free_space;
 }
 
-// helper method for finding the location of the subdirectory to copy to
+/* a helper method for finding the location of the subdirectory to copy to
+
+	- sub is a flag that denotes whether or not we are in a subdirectory or the root directory 
+	- subs is a list of subdirectories we are searching through
+	- num_subs is the total amound of subdirectories we must find
+	- curr_target is the index of the directory we are currently searching for
+
+*/
 int find_sub(char* memblock, int d, int sub, char** subs, int num_subs, int curr_target) {
 	
 	printf("RUNS\n");
@@ -135,6 +148,151 @@ L_START:
 	}
 	
 	return -1;
+}
+
+// helper for finding the first available fat entry starting at a given location
+int get_free_fat (memblock, int d) {
+
+	int i = 2;
+	int offset = i+d;
+	while (get_fat(memblock, offset) != 0x000) {
+		i++;
+	}
+
+	return i;
+}
+
+// helper to set the fat entry at i to point at a given next value
+void set_fat(char* memblock, int i, int next) {
+	if ((i % 2) == 0) {
+		memblock[SECTOR_SIZE + ((3*i) / 2) + 1] = (next >> 8) & 0b00001111;
+		memblock[SECTOR_SIZE + ((3*i) / 2)] = next & 0b11111111;
+	} else {
+		memblock[SECTOR_SIZE + (int)((3*i) / 2)] = (next << 4) & 0b11110000;
+		memblock[SECTOR_SIZE + (int)((3*i) / 2) + 1] = (next >> 4) & 0b11111111;
+	}
+}
+
+// updates the directory to include the file we are copying in 
+void update_directory(char* memblock, int d, char* name, char* size, int free_fat, int sub) {
+	// find free directory slot
+	int i;
+	int lim = SECTOR_SIZE*13;
+	if (sub) {
+		lim = SECTOR_SIZE;
+	}
+	// the offset of the next free directory entry
+	int offset;
+	int found = 0;
+
+L2_START:	
+	for (i = 0; i < lim; i = i+32) {
+		offset = i+d;
+		if (!memblock[offset]) {
+			found = 1;
+			break;
+		}
+	}
+	int fat;
+	if (sub) {
+		// check for another sector if inside subdirectory
+		fat = get_fat(memblock, d);
+		if ((fat != 0x00) && ((fat < 0xFF0) || (fat > 0xFFF))) {
+			d = (31+fat)*SECTOR_SIZE;
+			goto L2_START;
+		} 
+	}
+	// if an open space is not found in the subdirectory, make more space at the next available fat entry
+	if (sub && !found) {
+		int next_free_fat = get_free_fat(memblock, free_fat+1);
+		
+		// set this sector's fat entry to point at next free fat and copy file to there
+		set_fat(memblock, fat, next_free_fat)
+		offset = (31+next_free_fat)*SECTOR_SIZE;
+	
+	// if an open space is not found and we are not in a subdirectory, exit
+	} else if (!sub && !found) {
+		printf("Error: Root Directory is full.\n");
+		exit(1);
+	}
+
+	// set filename and extension
+	int done = 0;
+	for (i = 0; i < 8; i++) {
+		char character = name[i+offset];
+		if (character == '.') {
+			done = i;
+		}
+		if (!done) {
+			memblock[i+offset] = character;
+		} else {
+			memblock[i+offset] = ' ';
+		}		
+	}
+	for (i = 0; i < 3; i++) {
+		memblock[i+8+offset] = name[i+done+1+offset];
+	}
+
+	// set attribute
+	memblock[11+offset] = 0x00;
+
+	// set creation time 
+	time_t t = time(NULL);
+	struct tm *curr = localtime(&t);
+	int year = curr->tm_year + 1900;
+	int month = (curr->tm_mon + 1);
+	int day = curr->tm_mday;
+	int h = curr->tm_hour;
+	int min = curr->tm_min;
+	memblock[14+offset] = 0;
+	memblock[15+offset] = 0;
+	memblock[16+offset] = 0;
+	memblock[17+offset] = 0;
+	memblock[17+offset] = (memblock[17+offset]|(year - 1980) << 1);
+	memblock[17+offset] = (memblock[17+offset]|(month - ((memblock[16+offset] & 0b11100000) >> 5)) >> 3);
+	memblock[16+offset] = (memblock[16+offset]|(month - (((memblock[17+offset] & 0b00000001)) << 3)) << 5);
+	memblock[16+offset] = (memblock[16+offset]|(day & 0b00011111));
+	memblock[15+offset] = (memblock[15+offset]|(h << 3) & 0b11111000);
+	memblock[15+offset] = (memblock[15+offset]|(min - ((memblock[14+offset] & 0b11100000) >> 5)) >> 3);
+	memblock[14+offset] = (memblock[14+offset]|(min - ((memblock[15+offset] & 0b00000111) << 3)) << 5);
+
+	// set first logical cluster
+	memblock[26+offset] = (free_fat - (memblock[27+offset] << 8)) & 0xFF;
+	memblock[27+offset] = (free_fat - memblock[26+offset]) >> 8;
+
+	// set file size
+	memblock[28+memblock] = (size & 0x000000FF);
+	memblock[29+memblock] = (size & 0x0000FF00) >> 8;
+	memblock[30+memblock] = (size & 0x00FF0000) >> 16;
+	memblock[31+memblock] = (size & 0xFF000000) >> 24;
+}
+
+// copies a file into a specified location
+void copy_file(char* memblock, char* inblock, int d, char* name, int size, int sub) {
+	int remaining = size;
+	int free_fat = get_free_fat(memblock, SECTOR_SIZE);
+	
+	// updates the directory entry at the location
+	update_directory(memblock, d, name, size, free_fat, sub);
+	
+	while (bytesRemaining > 0) {
+		int p_a = (31+free_fat)*SECTOR_SIZE;
+		
+		int i;
+		for (i = 0; i < SECTOR_SIZE; i++) {
+			if (!remaining) {
+				set_fat(memblock, free_fat, 0xFFF);
+				return;
+			}
+			memblock[i+d+p_a] = inblock[size - remaining];
+			remaining--;
+		}
+		int next_free_fat = get_free_fat(memblock, free_fat+1);;
+		set_fat(memblock, free_fat, next_free_fat);
+		free_fat = next_free_fat;
+	}
+	
+	return;
 }
 
 int main(int argc, char* argv[]) {
@@ -222,9 +380,9 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 	
-	// convert names to upper case
+	// convert subdirectory names to upper case
 	int i;
-	for (i = 0; i < count; i++) {
+	for (i = 0; i < count-1; i++) {
 		char* s = subdirectories[i];
 		while (*s) {
 			*s = toupper((unsigned char) *s);
@@ -235,7 +393,9 @@ int main(int argc, char* argv[]) {
 	
 	// search for location of subdirectory if required, otherwise file is copied to the root directory
 	int location = SECTOR_SIZE*19;
+	int sub = 0;
 	if (count) {
+		sub = 1;
 		location = find_sub(memblock, SECTOR_SIZE*19, 0, subdirectories, count-1, 0);
 		if (location < 0) {
 			printf("The directory not found.\n");
@@ -247,14 +407,10 @@ int main(int argc, char* argv[]) {
 		}
 	} 
 	
-	printf("location: %d\n",location);
-	
-	
-	
+	//printf("location: %d\n",location);
 	
 	// copy file to location ***
-
-	
+	copy_file(memblock, inblock, location, file_name, file_size, sub);
 	
 	// clean up
 	munmap(memblock, buff.st_size);
