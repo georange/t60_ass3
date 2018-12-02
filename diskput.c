@@ -261,10 +261,10 @@ L2_START:
 	memblock[27+offset] = (free_fat - memblock[26+offset]) >> 8;
 
 	// set file size
-	memblock[28+memblock] = (size & 0x000000FF);
-	memblock[29+memblock] = (size & 0x0000FF00) >> 8;
-	memblock[30+memblock] = (size & 0x00FF0000) >> 16;
-	memblock[31+memblock] = (size & 0xFF000000) >> 24;
+	memblock[28+offset] = (size & 0x000000FF);
+	memblock[29+offset] = (size & 0x0000FF00) >> 8;
+	memblock[30+offset] = (size & 0x00FF0000) >> 16;
+	memblock[31+offset] = (size & 0xFF000000) >> 24;
 }
 
 // copies a file into a specified location
