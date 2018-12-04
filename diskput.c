@@ -102,8 +102,8 @@ L_START:
 
 		// if a subdirectory is found, check for the name
 		if ((temp & 0x10)){
-			char* file_name = malloc(sizeof(char));
-			char* file_extension = malloc(sizeof(char));
+			char file_name[8]; 
+			char file_extension[3]; 
 			int j;
 			for (j = 0; j < 8; j++) {
 				if (memblock[offset+j] == ' ') {
@@ -115,10 +115,7 @@ L_START:
 				file_extension[j] = memblock[offset+j+8];
 			}
 			
-			printf("%s\n", file_name);
-
-			//strcat(file_name, ".");
-			//strcat(file_name, file_extension);
+			//printf("%s\n", file_name);
 			
 			// if a matching name is found
 			if (!strcmp(subs[curr_target], file_name)) {
@@ -196,7 +193,7 @@ L2_START:
 	int fat;
 	if (sub) {
 		// check for another sector if inside subdirectory
-		fat = get_fat(memblock, d);
+		fat = get_fat(memblock, d/SECTOR_SIZE-31);
 		if ((fat != 0x00) && ((fat < 0xFF0) || (fat > 0xFFF))) {
 			d = (31+fat)*SECTOR_SIZE;
 			goto L2_START;
@@ -219,7 +216,7 @@ L2_START:
 	// set filename and extension
 	int done = 0;
 	for (i = 0; i < 8; i++) {
-		char character = name[i+offset];
+		char character = name[i];
 		if (character == '.') {
 			done = i;
 		}
@@ -230,7 +227,7 @@ L2_START:
 		}		
 	}
 	for (i = 0; i < 3; i++) {
-		memblock[i+8+offset] = name[i+done+1+offset];
+		memblock[i+8+offset] = name[i+done+1];
 	}
 
 	// set attribute
@@ -335,8 +332,6 @@ int main(int argc, char* argv[]) {
 		file_name = subdirectories[count-1];
 	}
 	
-	
-	
 // testing prints
 /*	int i;
 	for (i = 0; i < count; i++) {
@@ -346,7 +341,6 @@ int main(int argc, char* argv[]) {
 	printf("%s\n", file_name);	
 	printf("count = %d\n", count);	*/
 	//printf("len = %zu\n",sizeof(subdirectories)/sizeof(subdirectories[0]));
-	
 	
 	// set up file to copy into disk 
 	int fd2 = open(file_name, O_RDWR);
@@ -407,9 +401,9 @@ int main(int argc, char* argv[]) {
 		}
 	} 
 	
-	printf("location: %d\n",location);
+	//printf("location: %d\n",location);
 	
-	// copy file to location ***
+	// copy file to location 
 	copy_file(memblock, inblock, location, file_name, file_size, sub);
 	
 	// clean up
