@@ -122,7 +122,8 @@ L_START:
 						}
 					}
 				} else {
-					return offset;
+					logical_cluster = (int)memblock[offset+26] + ((int)memblock[offset+27] << 8);
+					return (31+logical_cluster)*SECTOR_SIZE;
 				}
 			}
 		}
@@ -143,9 +144,8 @@ L_START:
 // helper for finding the first available fat entry starting at a given location
 int get_free_fat (char* memblock, int d) {
 
-	int i = 2;
-	int offset = i+d;
-	while (get_fat(memblock, offset) != 0x000) {
+	int i = 2+d;
+	while (get_fat(memblock, i) != 0x000) {
 		i++;
 	}
 
@@ -247,8 +247,8 @@ L2_START:
 	memblock[14+offset] = (memblock[14+offset]|(min - ((memblock[15+offset] & 0b00000111) << 3)) << 5);
 
 	// set first logical cluster
-	memblock[26+offset] = (free_fat - (memblock[27+offset] << 8)) & 0xFF;
-	memblock[27+offset] = (free_fat - memblock[26+offset]) >> 8;
+	memblock[26+offset] = free_fat & 0xFF;
+	memblock[27+offset] = free_fat >> 8;
 
 	// set file size
 	memblock[28+offset] = (size & 0x000000FF);
@@ -260,7 +260,7 @@ L2_START:
 // copies a file into a specified location
 void copy_file(char* memblock, char* inblock, int d, char* name, int size, int sub) {
 	int remaining = size;
-	int free_fat = get_free_fat(memblock, SECTOR_SIZE);
+	int free_fat = get_free_fat(memblock, 0);
 	
 	// updates the directory entry at the location
 	update_directory(memblock, d, name, size, free_fat, sub);
@@ -274,7 +274,7 @@ void copy_file(char* memblock, char* inblock, int d, char* name, int size, int s
 				set_fat(memblock, free_fat, 0xFFF);
 				return;
 			}
-			memblock[i+d+p_a] = inblock[size - remaining];
+			memblock[i+p_a] = inblock[size - remaining];
 			remaining--;
 		}
 		int next_free_fat = get_free_fat(memblock, free_fat+1);;
