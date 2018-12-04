@@ -103,16 +103,12 @@ L_START:
 		// if a subdirectory is found, check for the name
 		if ((temp & 0x10)){
 			char file_name[8]; 
-			char file_extension[3]; 
 			int j;
 			for (j = 0; j < 8; j++) {
 				if (memblock[offset+j] == ' ') {
 					break;
 				}
 				file_name[j] = memblock[offset+j];
-			}
-			for (j = 0; j < 3; j++) {
-				file_extension[j] = memblock[offset+j+8];
 			}
 			
 			//printf("%s\n", file_name);
