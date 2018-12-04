@@ -61,7 +61,7 @@ void get_name(char* memblock, int offset, char* file_name, char* file_extension)
             file_extension[i] = 0;
             break;
         }
-		file_extension[offset+i] = memblock[offset+i+8];
+		file_extension[i] = memblock[offset+i+8];
 	}
 		
 	if (file_extension[0]!=0 && 0!=strncmp(file_extension,"   ",3)) {
