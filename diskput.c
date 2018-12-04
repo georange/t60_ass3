@@ -76,10 +76,7 @@ int get_free_size(char* memblock, int size) {
 	- curr_target is the index of the directory we are currently searching for
 
 */
-int find_sub(char* memblock, int d, int sub, char** subs, int num_subs, int curr_target) {
-	
-	printf("RUNS\n");
-	
+int find_sub(char* memblock, int d, int sub, char** subs, int num_subs, int curr_target) {	
 	int i;
 	int lim = SECTOR_SIZE*13;
 	if (sub) {
@@ -305,7 +302,7 @@ int main(int argc, char* argv[]) {
 	}
 	
 	fstat(fd, &buff);
-	memblock = mmap(NULL, buff.st_size, PROT_READ, MAP_SHARED, fd, 0);
+	memblock = mmap(NULL, buff.st_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
 	if (memblock == MAP_FAILED) {
 		printf("Error: could not map memory.\n");
 		close(fd);
@@ -378,7 +375,7 @@ int main(int argc, char* argv[]) {
 			*s = toupper((unsigned char) *s);
 			s++;
 		}
-		printf("%s\n", subdirectories[i]);
+		//printf("%s\n", subdirectories[i]);
 	}
 	
 	// search for location of subdirectory if required, otherwise file is copied to the root directory
