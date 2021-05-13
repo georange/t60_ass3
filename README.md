@@ -1,1 +1,1 @@
-see p1.pdf 
+# school assignment
